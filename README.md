@@ -102,3 +102,7 @@ gvalles/wisesheets-company-screener
 gvalles/wisesheets-portfolio-tracker
 gvalles/wisesheets-excel-addin-starter
 ```
+
+## License
+
+MIT. Wisesheets API access requires your own Wisesheets account and API key.
