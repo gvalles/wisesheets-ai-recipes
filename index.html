@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wisesheets Templates</title>
+    <meta
+      name="description"
+      content="Starter templates for building Wisesheets-powered financial apps with AI coding agents."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="./">Wisesheets Templates</a>
+        <div class="nav-links">
+          <a href="#templates">Templates</a>
+          <a href="#workflow">Workflow</a>
+          <a href="https://github.com/gvalles/wisesheets-templates">GitHub</a>
+        </div>
+      </nav>
+      <section class="hero">
+        <p class="eyebrow">Starter projects for AI coding agents</p>
+        <h1>Build financial apps faster with Wisesheets templates.</h1>
+        <p class="hero-copy">
+          Pick a template, add your Wisesheets API key, and let your AI coding agent customize dashboards,
+          screeners, portfolio tools, and spreadsheet workflows.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#templates">Browse templates</a>
+          <a class="button" href="#workflow">Setup workflow</a>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section id="templates" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Template gallery</p>
+          <h2>Choose a starting point</h2>
+        </div>
+
+        <div class="template-grid">
+          <article class="template-card">
+            <div class="card-topline">
+              <span class="status ready">Ready locally</span>
+              <span class="difficulty">Beginner</span>
+            </div>
+            <h3>Dashboard Starter</h3>
+            <p>
+              Fundamentals dashboard with company search, five-year trends, KPI cards, statements, and health scoring.
+            </p>
+            <dl>
+              <div><dt>Stack</dt><dd>React, Vite, TypeScript, Tailwind, Recharts</dd></div>
+              <div><dt>API</dt><dd>/companies, /financials, /statements</dd></div>
+            </dl>
+            <div class="card-actions">
+              <a href="https://github.com/gvalles/wisesheets-dashboard-starter/generate">Use template</a>
+              <a href="templates/dashboard-starter.md">Details</a>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="card-topline">
+              <span class="status planned">Planned</span>
+              <span class="difficulty">Intermediate</span>
+            </div>
+            <h3>Company Screener</h3>
+            <p>
+              Screen companies by exchange, industry, growth, margins, balance sheet quality, and valuation signals.
+            </p>
+            <dl>
+              <div><dt>Stack</dt><dd>React, Vite, TypeScript, Tailwind</dd></div>
+              <div><dt>API</dt><dd>/companies, /financials</dd></div>
+            </dl>
+            <div class="card-actions">
+              <a href="https://github.com/gvalles/wisesheets-company-screener/generate">Use template</a>
+              <a href="templates/company-screener.md">Details</a>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="card-topline">
+              <span class="status planned">Planned</span>
+              <span class="difficulty">Intermediate</span>
+            </div>
+            <h3>Portfolio Tracker</h3>
+            <p>
+              Track holdings, portfolio exposure, company fundamentals, and aggregate portfolio quality.
+            </p>
+            <dl>
+              <div><dt>Stack</dt><dd>React, Vite, TypeScript, Tailwind</dd></div>
+              <div><dt>API</dt><dd>/companies, /financials, /statements</dd></div>
+            </dl>
+            <div class="card-actions">
+              <a href="https://github.com/gvalles/wisesheets-portfolio-tracker/generate">Use template</a>
+              <a href="templates/portfolio-tracker.md">Details</a>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="card-topline">
+              <span class="status planned">Planned</span>
+              <span class="difficulty">Advanced</span>
+            </div>
+            <h3>Excel Add-in Starter</h3>
+            <p>
+              Office.js starter for spreadsheet-native Wisesheets workflows and AI-assisted financial analysis.
+            </p>
+            <dl>
+              <div><dt>Stack</dt><dd>Office.js, TypeScript, React</dd></div>
+              <div><dt>API</dt><dd>/companies, /financials, /statements</dd></div>
+            </dl>
+            <div class="card-actions">
+              <a href="https://github.com/gvalles/wisesheets-excel-addin-starter/generate">Use template</a>
+              <a href="templates/excel-addin-starter.md">Details</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="workflow" class="section workflow">
+        <div class="section-heading">
+          <p class="eyebrow">User workflow</p>
+          <h2>From template to custom app</h2>
+        </div>
+        <ol class="steps">
+          <li><strong>Pick a template.</strong><span>Choose the starter closest to the app you want to build.</span></li>
+          <li><strong>Use the GitHub template.</strong><span>Create your own repo copy without forking.</span></li>
+          <li><strong>Add your API key.</strong><span>Set <code>WISESHEETS_API_KEY</code> in <code>.env</code> or runtime secrets.</span></li>
+          <li><strong>Open with an AI agent.</strong><span>Ask it to read README.md, AGENTS.md, CUSTOMIZE.md, and API docs.</span></li>
+          <li><strong>Customize and deploy.</strong><span>Keep API calls server-side through the provided proxy.</span></li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Wisesheets Templates</span>
+      <a href="data/templates.json">Template metadata</a>
+    </footer>
+  </body>
+</html>
+

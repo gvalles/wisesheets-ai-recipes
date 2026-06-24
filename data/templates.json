@@ -1,0 +1,63 @@
+[
+  {
+    "name": "Dashboard Starter",
+    "slug": "dashboard-starter",
+    "status": "Ready locally",
+    "description": "A React dashboard for fundamentals, five-year trends, company search, statements, and health scoring.",
+    "repo": "https://github.com/gvalles/wisesheets-dashboard-starter",
+    "templateUrl": "https://github.com/gvalles/wisesheets-dashboard-starter/generate",
+    "demo": "https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site",
+    "stack": ["React", "Vite", "TypeScript", "Tailwind CSS", "Recharts"],
+    "apiEndpoints": ["/v1/companies", "/v1/financials", "/v1/statements"],
+    "bestFor": "Fundamentals dashboards, investor tools, company analysis pages",
+    "difficulty": "Beginner",
+    "detailPage": "templates/dashboard-starter.md",
+    "agentPrompt": "Read README.md, AGENTS.md, CUSTOMIZE.md, and WISESHEETS_API.md. Help me customize this Wisesheets dashboard. Keep API keys server-side and use the existing /api/wisesheets proxy."
+  },
+  {
+    "name": "Company Screener",
+    "slug": "company-screener",
+    "status": "Planned",
+    "description": "A filterable company screener for finding stocks by growth, margin, balance sheet, exchange, and industry.",
+    "repo": "https://github.com/gvalles/wisesheets-company-screener",
+    "templateUrl": "https://github.com/gvalles/wisesheets-company-screener/generate",
+    "demo": "",
+    "stack": ["React", "Vite", "TypeScript", "Tailwind CSS"],
+    "apiEndpoints": ["/v1/companies", "/v1/financials"],
+    "bestFor": "Screening workflows, watchlists, discovery tools",
+    "difficulty": "Intermediate",
+    "detailPage": "templates/company-screener.md",
+    "agentPrompt": "Read README.md, AGENTS.md, and WISESHEETS_API.md. Build or customize a Wisesheets screener. Keep API keys server-side and route API calls through /api/wisesheets."
+  },
+  {
+    "name": "Portfolio Tracker",
+    "slug": "portfolio-tracker",
+    "status": "Planned",
+    "description": "A portfolio dashboard that tracks holdings, exposure, company fundamentals, and aggregate portfolio quality.",
+    "repo": "https://github.com/gvalles/wisesheets-portfolio-tracker",
+    "templateUrl": "https://github.com/gvalles/wisesheets-portfolio-tracker/generate",
+    "demo": "",
+    "stack": ["React", "Vite", "TypeScript", "Tailwind CSS"],
+    "apiEndpoints": ["/v1/companies", "/v1/financials", "/v1/statements"],
+    "bestFor": "Personal portfolios, client dashboards, monitoring workflows",
+    "difficulty": "Intermediate",
+    "detailPage": "templates/portfolio-tracker.md",
+    "agentPrompt": "Read README.md, AGENTS.md, and WISESHEETS_API.md. Customize this portfolio tracker for my holdings. Keep WISESHEETS_API_KEY server-side."
+  },
+  {
+    "name": "Excel Add-in Starter",
+    "slug": "excel-addin-starter",
+    "status": "Planned",
+    "description": "An Excel add-in starter for Wisesheets-powered spreadsheet workflows and AI-assisted financial analysis.",
+    "repo": "https://github.com/gvalles/wisesheets-excel-addin-starter",
+    "templateUrl": "https://github.com/gvalles/wisesheets-excel-addin-starter/generate",
+    "demo": "",
+    "stack": ["Office.js", "TypeScript", "React"],
+    "apiEndpoints": ["/v1/companies", "/v1/financials", "/v1/statements"],
+    "bestFor": "Spreadsheet models, analyst workflows, Excel-native tools",
+    "difficulty": "Advanced",
+    "detailPage": "templates/excel-addin-starter.md",
+    "agentPrompt": "Read README.md, AGENTS.md, and WISESHEETS_API.md. Customize this Excel add-in for Wisesheets workflows. Keep API credentials out of worksheet-visible code."
+  }
+]
+
