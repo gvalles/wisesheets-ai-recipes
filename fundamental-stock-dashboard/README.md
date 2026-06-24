@@ -1,4 +1,4 @@
-# Wisesheets Dashboard Starter
+# Wisesheets Fundamental Stock Dashboard
 
 A React + Vite financial dashboard powered by the Wisesheets API.
 

@@ -23,5 +23,5 @@ Read data/recipes.json and index.html. Add a new card for <recipe name> that lin
 ## Make The Repo Easier For AI Agents
 
 ```txt
-Read all root docs and dashboard-starter docs. Tighten the instructions for AI coding agents. Make the free API key flow explicit with https://www.wisesheets.io/api and keep API docs linked to https://www.wisesheets.io/api/docs.
+Read all root docs and fundamental-stock-dashboard docs. Tighten the instructions for AI coding agents. Make the free API key flow explicit with https://www.wisesheets.io/api and keep API docs linked to https://www.wisesheets.io/api/docs.
 ```

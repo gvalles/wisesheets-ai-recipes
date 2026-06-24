@@ -14,7 +14,7 @@ Do not rely on bundled API markdown files. Recipe docs should link to the offici
 ## Repo Structure
 
 ```txt
-dashboard-starter/
+fundamental-stock-dashboard/
 data/recipes.json
 index.html
 README.md

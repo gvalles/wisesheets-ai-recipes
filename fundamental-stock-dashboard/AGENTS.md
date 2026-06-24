@@ -1,6 +1,6 @@
 # AI Coding Agent Instructions
 
-This is the Wisesheets dashboard starter. Preserve the server-side API proxy and keep API keys out of browser code.
+This is the Wisesheets fundamental stock dashboard. Preserve the server-side API proxy and keep API keys out of browser code.
 
 ## Official API Sources
 

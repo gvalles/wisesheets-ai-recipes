@@ -18,7 +18,7 @@ https://www.wisesheets.io/api/docs
 
 | Recipe | Status | Folder | Live Demo |
 | --- | --- | --- | --- |
-| Dashboard Starter | Live | [`dashboard-starter/`](dashboard-starter/) | https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site |
+| Fundamental Stock Dashboard | Live | [`fundamental-stock-dashboard/`](fundamental-stock-dashboard/) | https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site |
 | Company Screener | Planned | `company-screener/` | - |
 | Portfolio Tracker | Planned | `portfolio-tracker/` | - |
 | Excel Add-in Starter | Planned | `excel-addin-starter/` | - |
@@ -26,7 +26,7 @@ https://www.wisesheets.io/api/docs
 ## How People Use This Repo
 
 1. Clone this repo.
-2. Choose a recipe folder, starting with `dashboard-starter/`.
+2. Choose a recipe folder, starting with `fundamental-stock-dashboard/`.
 3. Copy that folder into their own project or work directly inside it.
 4. Get a free key from https://www.wisesheets.io/api.
 5. Create `.env` in the recipe folder:
@@ -40,7 +40,7 @@ WISESHEETS_API_KEY=your_key_here
 
 ## Current Live Recipe
 
-The `dashboard-starter/` folder contains the code behind this live dashboard:
+The `fundamental-stock-dashboard/` folder contains the code behind this live dashboard:
 
 https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site
 
