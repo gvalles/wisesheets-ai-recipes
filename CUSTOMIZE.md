@@ -1,27 +1,27 @@
 # Catalog Customization Prompts
 
-Use these prompts when editing the Wisesheets recipe catalog with an AI coding agent.
+Use these prompts when editing the Wisesheets AI Recipes repo with an AI coding agent.
 
-## Add A New Recipe
+## Add A New Recipe Folder
 
 ```txt
-Read README.md, AGENTS.md, data/templates.json, and the existing files in templates/. Add a new Wisesheets recipe entry for <recipe name>. Include a catalog card, metadata, and a detail page. Keep links consistent across the repo.
+Read README.md, AGENTS.md, index.html, and data/recipes.json. Add a new Wisesheets recipe as a complete project folder named <folder-name>/. Link users to https://www.wisesheets.io/api for a free key and https://www.wisesheets.io/api/docs for API docs. Do not add bundled API markdown or secrets.
 ```
 
-## Improve The Landing Page
+## Improve The Catalog Page
 
 ```txt
-Read README.md and AGENTS.md. Improve index.html as a polished static template gallery. Keep it framework-free, fast, responsive, and easy to scan. Do not introduce a build step.
+Read README.md and AGENTS.md. Improve index.html as a polished static recipe gallery. Keep it framework-free, fast, responsive, and easy to scan. Do not introduce a build step.
 ```
 
-## Make The Catalog Public-Ready
+## Add A Recipe Card
 
 ```txt
-Read all Markdown files and index.html. Tighten the copy for developers using AI coding agents. Make setup steps clear and make the API key flow explicit. Do not include secrets.
+Read data/recipes.json and index.html. Add a new card for <recipe name> that links to the local folder, lists the stack, lists the Wisesheets endpoints used, and explains how users power it with WISESHEETS_API_KEY.
 ```
 
-## Add GitHub Pages Instructions
+## Make The Repo Easier For AI Agents
 
 ```txt
-Read README.md. Add or improve instructions for publishing this catalog through GitHub Pages. Keep the instructions specific to the gvalles/wisesheets-ai-recipes repo.
+Read all root docs and dashboard-starter docs. Tighten the instructions for AI coding agents. Make the free API key flow explicit with https://www.wisesheets.io/api and keep API docs linked to https://www.wisesheets.io/api/docs.
 ```

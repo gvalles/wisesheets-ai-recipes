@@ -1,48 +1,52 @@
 # Wisesheets AI Recipes
 
-A browsable catalog of buildable app recipes for creating financial tools with the Wisesheets API and AI coding agents.
+Buildable Wisesheets app recipes for AI coding agents.
 
-Use this repo as the hub. Each recipe can point to a GitHub template repository so users can click **Use this template**, add their Wisesheets API key, and customize the project with their AI coding agent.
+This repo contains complete project folders that people can clone, open with an AI coding agent, modify, and power with their own Wisesheets API key.
 
-## Browse
+## Get A Free API Key
 
-Open `index.html` locally, or publish this repo with GitHub Pages.
+Get a free Wisesheets API key here:
 
-Recommended GitHub Pages setup:
+https://www.wisesheets.io/api
 
-1. Create `gvalles/wisesheets-ai-recipes`.
-2. Push this repo.
-3. Go to **Settings -> Pages**.
-4. Set source to `main` branch and root folder.
-5. Share the published Pages URL.
+Official API docs:
 
-## Recipe Repositories
+https://www.wisesheets.io/api/docs
 
-| Recipe | Status | Best For | Repo |
+## Recipes
+
+| Recipe | Status | Folder | Live Demo |
 | --- | --- | --- | --- |
-| Dashboard Starter | Ready locally | Fundamentals dashboards, investor tools | `gvalles/wisesheets-dashboard-starter` |
-| Company Screener | Planned | Screening companies by metrics and industry | `gvalles/wisesheets-company-screener` |
-| Portfolio Tracker | Planned | Tracking holdings and portfolio fundamentals | `gvalles/wisesheets-portfolio-tracker` |
-| Excel Add-in Starter | Planned | Spreadsheet-native workflows | `gvalles/wisesheets-excel-addin-starter` |
+| Dashboard Starter | Live | [`dashboard-starter/`](dashboard-starter/) | https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site |
+| Company Screener | Planned | `company-screener/` | - |
+| Portfolio Tracker | Planned | `portfolio-tracker/` | - |
+| Excel Add-in Starter | Planned | `excel-addin-starter/` | - |
 
-## User Flow
+## How People Use This Repo
 
-1. Browse the catalog.
-2. Pick a recipe.
-3. Click **Use this template** on GitHub.
-4. Add a local `.env` file:
+1. Clone this repo.
+2. Choose a recipe folder, starting with `dashboard-starter/`.
+3. Copy that folder into their own project or work directly inside it.
+4. Get a free key from https://www.wisesheets.io/api.
+5. Create `.env` in the recipe folder:
 
 ```bash
 WISESHEETS_API_KEY=your_key_here
 ```
 
-5. Run the project.
-6. Open it in Cursor, Codex, Claude Code, Replit, or another AI coding agent.
-7. Ask the agent to read `README.md`, `AGENTS.md`, `CUSTOMIZE.md`, and the Wisesheets API docs before modifying code.
+6. Run the recipe.
+7. Ask their AI coding agent to read the recipe `README.md`, `AGENTS.md`, `CUSTOMIZE.md`, and the official API docs.
 
-## Standard Recipe Contract
+## Current Live Recipe
 
-Every starter repo linked from a recipe should include:
+The `dashboard-starter/` folder contains the code behind this live dashboard:
+
+https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site
+
+## Folder Standard
+
+Each complete recipe folder should include:
 
 ```txt
 README.md
@@ -53,25 +57,26 @@ package.json
 src/
 ```
 
-Recommended when relevant:
+Optional depending on the recipe:
 
 ```txt
-WISESHEETS_API.md
 worker/
 public/
 ```
+
+Do not include local secrets or deployment-specific files.
 
 ## API Key Rule
 
 Wisesheets API keys must stay server-side.
 
-Do:
+Use:
 
 ```txt
 WISESHEETS_API_KEY=...
 ```
 
-Do not:
+Do not use:
 
 ```txt
 VITE_WISESHEETS_API_KEY=...
@@ -79,29 +84,23 @@ VITE_WISESHEETS_API_KEY=...
 
 Variables prefixed with `VITE_` are exposed to browser code.
 
-## Recipe Checklist
+## Adding More Recipes
 
-Before publishing a new recipe:
-
-- Add `.env.example`.
-- Ignore `.env` and `.env.local`.
-- Add `AGENTS.md`.
-- Add `CUSTOMIZE.md`.
-- Run the build command.
-- Confirm no real API key is committed.
-- Mark the linked GitHub repo as a template when it is a copyable app starter.
-- Add the recipe to `data/templates.json`.
-- Add a recipe detail page in `templates/`.
-
-## Suggested Repo Naming
+Future projects should be added as sibling folders:
 
 ```txt
-gvalles/wisesheets-ai-recipes
-gvalles/wisesheets-dashboard-starter
-gvalles/wisesheets-company-screener
-gvalles/wisesheets-portfolio-tracker
-gvalles/wisesheets-excel-addin-starter
+company-screener/
+portfolio-tracker/
+excel-addin-starter/
 ```
+
+When adding a recipe:
+
+- Add a complete project folder.
+- Add `.env.example`.
+- Ignore `.env`, `.env.local`, `node_modules/`, `dist/`, and generated files.
+- Link to https://www.wisesheets.io/api/docs instead of bundling API docs.
+- Update `README.md`, `index.html`, and `data/recipes.json`.
 
 ## License
 

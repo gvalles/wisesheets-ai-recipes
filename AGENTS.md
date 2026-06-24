@@ -1,49 +1,68 @@
 # AI Coding Agent Instructions
 
-This repository is the catalog hub for Wisesheets starter projects and recipes.
+This repository is a folder-based collection of Wisesheets AI recipes.
 
-## Purpose
+Each recipe folder is a complete project that users can run, modify, and power with their own Wisesheets API key.
 
-Help users find a template, clone it, add a Wisesheets API key, and customize it with an AI coding agent.
+## Official API Sources
 
-## Keep This Repo Simple
+- Free API key: https://www.wisesheets.io/api
+- Official API docs: https://www.wisesheets.io/api/docs
 
-This repo should stay lightweight:
+Do not rely on bundled API markdown files. Recipe docs should link to the official docs.
 
-- Static catalog page in `index.html`
-- Recipe metadata in `data/templates.json`
-- One Markdown detail page per recipe in `templates/`
-- No build system unless it becomes necessary
+## Repo Structure
 
-## Editing Rules
+```txt
+dashboard-starter/
+data/recipes.json
+index.html
+README.md
+AGENTS.md
+CUSTOMIZE.md
+```
 
-- Do not add real API keys.
-- Do not add generated build artifacts.
-- Keep recipe links consistent between `README.md`, `index.html`, `data/templates.json`, and `templates/*.md`.
-- Prefer plain HTML/CSS for the catalog until there is a clear need for a framework.
-- Keep copy written for builders using AI coding agents.
+Future complete projects should be added as sibling folders:
 
-## Recipe Metadata
+```txt
+company-screener/
+portfolio-tracker/
+excel-addin-starter/
+```
 
-When adding a recipe, update `data/templates.json` with:
+## Rules
 
-- `name`
-- `slug`
-- `status`
-- `description`
-- `repo`
-- `demo`
-- `stack`
-- `apiEndpoints`
-- `bestFor`
-- `difficulty`
-- `agentPrompt`
+- Do not commit real API keys.
+- Do not bundle local API reference markdown files.
+- Keep API docs linked to https://www.wisesheets.io/api/docs.
+- Keep `.env` and `.env.local` ignored.
+- Keep deployment-specific files out of shared recipe folders.
+- Update root `README.md`, `index.html`, and `data/recipes.json` when adding a new recipe.
+
+## Recipe Requirements
+
+Each runnable recipe should include:
+
+```txt
+README.md
+AGENTS.md
+CUSTOMIZE.md
+.env.example
+package.json
+src/
+```
 
 ## Validation
 
-Because this is a static hub, validation is mostly content review:
+For each app recipe:
+
+```bash
+npm run build
+```
+
+For this root catalog:
 
 - Open `index.html`.
-- Check all links.
-- Confirm JSON parses.
+- Confirm `data/recipes.json` parses.
+- Confirm all links are accurate.
 - Confirm no secrets are present.

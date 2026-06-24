@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.local
+.claude/
+.openai/hosting.json
+WISESHEETS_API.md
