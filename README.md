@@ -1,8 +1,8 @@
-# Wisesheets Templates
+# Wisesheets AI Recipes
 
-A browsable catalog of starter projects for building financial apps with the Wisesheets API and AI coding agents.
+A browsable catalog of buildable app recipes for creating financial tools with the Wisesheets API and AI coding agents.
 
-Use this repo as the hub. Each template should live in its own GitHub template repository so users can click **Use this template**, add their Wisesheets API key, and customize the project with their AI coding agent.
+Use this repo as the hub. Each recipe can point to a GitHub template repository so users can click **Use this template**, add their Wisesheets API key, and customize the project with their AI coding agent.
 
 ## Browse
 
@@ -10,15 +10,15 @@ Open `index.html` locally, or publish this repo with GitHub Pages.
 
 Recommended GitHub Pages setup:
 
-1. Create `gvalles/wisesheets-templates`.
+1. Create `gvalles/wisesheets-ai-recipes`.
 2. Push this repo.
 3. Go to **Settings -> Pages**.
 4. Set source to `main` branch and root folder.
 5. Share the published Pages URL.
 
-## Template Repositories
+## Recipe Repositories
 
-| Template | Status | Best For | Repo |
+| Recipe | Status | Best For | Repo |
 | --- | --- | --- | --- |
 | Dashboard Starter | Ready locally | Fundamentals dashboards, investor tools | `gvalles/wisesheets-dashboard-starter` |
 | Company Screener | Planned | Screening companies by metrics and industry | `gvalles/wisesheets-company-screener` |
@@ -28,7 +28,7 @@ Recommended GitHub Pages setup:
 ## User Flow
 
 1. Browse the catalog.
-2. Pick a template.
+2. Pick a recipe.
 3. Click **Use this template** on GitHub.
 4. Add a local `.env` file:
 
@@ -40,9 +40,9 @@ WISESHEETS_API_KEY=your_key_here
 6. Open it in Cursor, Codex, Claude Code, Replit, or another AI coding agent.
 7. Ask the agent to read `README.md`, `AGENTS.md`, `CUSTOMIZE.md`, and the Wisesheets API docs before modifying code.
 
-## Standard Template Contract
+## Standard Recipe Contract
 
-Every template should include:
+Every starter repo linked from a recipe should include:
 
 ```txt
 README.md
@@ -79,9 +79,9 @@ VITE_WISESHEETS_API_KEY=...
 
 Variables prefixed with `VITE_` are exposed to browser code.
 
-## Template Checklist
+## Recipe Checklist
 
-Before publishing a new template:
+Before publishing a new recipe:
 
 - Add `.env.example`.
 - Ignore `.env` and `.env.local`.
@@ -89,17 +89,16 @@ Before publishing a new template:
 - Add `CUSTOMIZE.md`.
 - Run the build command.
 - Confirm no real API key is committed.
-- Mark the GitHub repo as a template.
-- Add the template to `data/templates.json`.
-- Add a template detail page in `templates/`.
+- Mark the linked GitHub repo as a template when it is a copyable app starter.
+- Add the recipe to `data/templates.json`.
+- Add a recipe detail page in `templates/`.
 
 ## Suggested Repo Naming
 
 ```txt
-gvalles/wisesheets-templates
+gvalles/wisesheets-ai-recipes
 gvalles/wisesheets-dashboard-starter
 gvalles/wisesheets-company-screener
 gvalles/wisesheets-portfolio-tracker
 gvalles/wisesheets-excel-addin-starter
 ```
-

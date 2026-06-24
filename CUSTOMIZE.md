@@ -1,11 +1,11 @@
 # Catalog Customization Prompts
 
-Use these prompts when editing the Wisesheets template catalog with an AI coding agent.
+Use these prompts when editing the Wisesheets recipe catalog with an AI coding agent.
 
-## Add A New Template
+## Add A New Recipe
 
 ```txt
-Read README.md, AGENTS.md, data/templates.json, and the existing files in templates/. Add a new Wisesheets template entry for <template name>. Include a catalog card, metadata, and a detail page. Keep links consistent across the repo.
+Read README.md, AGENTS.md, data/templates.json, and the existing files in templates/. Add a new Wisesheets recipe entry for <recipe name>. Include a catalog card, metadata, and a detail page. Keep links consistent across the repo.
 ```
 
 ## Improve The Landing Page
@@ -23,6 +23,5 @@ Read all Markdown files and index.html. Tighten the copy for developers using AI
 ## Add GitHub Pages Instructions
 
 ```txt
-Read README.md. Add or improve instructions for publishing this catalog through GitHub Pages. Keep the instructions specific to the gvalles/wisesheets-templates repo.
+Read README.md. Add or improve instructions for publishing this catalog through GitHub Pages. Keep the instructions specific to the gvalles/wisesheets-ai-recipes repo.
 ```
-
