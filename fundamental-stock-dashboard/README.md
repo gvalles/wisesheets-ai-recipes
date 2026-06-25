@@ -52,7 +52,10 @@ The frontend calls:
 /api/wisesheets/...
 ```
 
-Local development uses the Vite proxy. Hosted deployments use `worker/index.js`.
+Local development uses the Vite proxy. Hosted deployments can use:
+
+- `api/wisesheets/[...path].js` on Vercel
+- `worker/index.js` on Cloudflare/Sites
 
 Both paths forward requests to:
 
@@ -82,6 +85,7 @@ npm run preview
 - `src/lib/api.ts` - Wisesheets API client helpers
 - `src/lib/rules.ts` - scoring and insight logic
 - `src/lib/mock.ts` - fallback mock data
+- `api/wisesheets/[...path].js` - Vercel serverless API proxy
 - `worker/index.js` - production API proxy and static asset worker
 - `AGENTS.md` - coding-agent instructions
 - `CUSTOMIZE.md` - starter prompts for modifications
@@ -95,6 +99,23 @@ WISESHEETS_API_KEY
 ```
 
 Do not use `VITE_` for the API key. `VITE_` variables are exposed to browser code.
+
+### Deploy On Vercel
+
+This folder is ready to deploy on Vercel.
+
+Use these settings when importing the GitHub repo:
+
+```txt
+Repository: gvalles/wisesheets-ai-recipes
+Root Directory: fundamental-stock-dashboard
+Framework preset: Vite
+Build command: npm run build
+Output directory: dist
+Environment variable: WISESHEETS_API_KEY
+```
+
+After deploy, the frontend will keep calling `/api/wisesheets/...`, and Vercel will handle that with `api/wisesheets/[...path].js`.
 
 ## AI Coding Agent Prompt
 

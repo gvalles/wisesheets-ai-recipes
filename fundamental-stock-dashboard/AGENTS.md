@@ -16,7 +16,8 @@ Do not rely on bundled API markdown. Use the official docs for endpoint details.
 - Charts: Recharts
 - API proxy:
   - Local dev: Vite proxy in `vite.config.ts`
-  - Hosted/prod: `worker/index.js`
+  - Vercel: `api/wisesheets/[...path].js`
+  - Cloudflare/Sites: `worker/index.js`
 
 ## Non-Negotiables
 
@@ -48,6 +49,7 @@ The proxy strips `/api/wisesheets` and forwards to `https://api.wisesheets.io`.
 - Search suggestions: `searchCompanies()` in `src/lib/api.ts`
 - Scoring rules: `src/lib/rules.ts`
 - Mock responses: `src/lib/mock.ts`
+- Vercel proxy: `api/wisesheets/[...path].js`
 - Production proxy: `worker/index.js`
 
 ## Build And Validate
