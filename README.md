@@ -1,8 +1,8 @@
 # Wisesheets AI Recipes
 
-Buildable Wisesheets app recipes for AI coding agents.
+Buildable Wisesheets app recipes for powerful dashboards and stock analysis tools for AI coding agents like Claude, Codex etc.
 
-This repo contains complete project folders that people can clone, open with an AI coding agent, modify, and power with their own Wisesheets API key.
+This repo contains complete project folders that people can clone, open with an AI coding agent, modify, and power with their own free Wisesheets API key.
 
 ## Get A Free API Key
 
@@ -104,4 +104,6 @@ When adding a recipe:
 
 ## License
 
-MIT. Wisesheets API access requires your own Wisesheets account and API key.
+This repository is licensed under the MIT License.
+
+Using the Wisesheets API requires your own Wisesheets account and API key. Wisesheets API usage is subject to Wisesheets’ own terms, pricing, and rate limits.
