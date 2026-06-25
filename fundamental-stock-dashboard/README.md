@@ -4,7 +4,7 @@ A React + Vite financial dashboard powered by the Wisesheets API.
 
 This folder contains the code behind the live dashboard:
 
-https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site
+https://fundamental-stock-dashboard.vercel.app
 
 Use it as a starting point for AI-assisted dashboard experiments: add your Wisesheets API key, run it locally, then ask your AI coding agent to customize the metrics, layout, workflows, or deployment target.
 

@@ -18,7 +18,7 @@ https://www.wisesheets.io/api/docs
 
 | Recipe | Status | Folder | Live Demo |
 | --- | --- | --- | --- |
-| Fundamental Stock Dashboard | Live | [`fundamental-stock-dashboard/`](fundamental-stock-dashboard/) | https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site |
+| Fundamental Stock Dashboard | Live | [`fundamental-stock-dashboard/`](fundamental-stock-dashboard/) | https://fundamental-stock-dashboard.vercel.app |
 | Company Screener | Planned | `company-screener/` | - |
 | Portfolio Tracker | Planned | `portfolio-tracker/` | - |
 | Excel Add-in Starter | Planned | `excel-addin-starter/` | - |
@@ -42,7 +42,7 @@ WISESHEETS_API_KEY=your_key_here
 
 The `fundamental-stock-dashboard/` folder contains the code behind this live dashboard:
 
-https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site
+https://fundamental-stock-dashboard.vercel.app
 
 ## Folder Standard
 

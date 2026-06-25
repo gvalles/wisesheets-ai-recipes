@@ -5,7 +5,7 @@
     "status": "Live",
     "description": "A React dashboard for fundamentals, five-year trends, company search, statements, and health scoring.",
     "folder": "fundamental-stock-dashboard/",
-    "demo": "https://wisesheets-terminal.wisesheets-i-9103.chatgpt-team.site",
+    "demo": "https://fundamental-stock-dashboard.vercel.app",
     "stack": ["React", "Vite", "TypeScript", "Tailwind CSS", "Recharts"],
     "apiEndpoints": ["/v1/companies", "/v1/financials", "/v1/statements"],
     "bestFor": "Fundamentals dashboards, investor tools, company analysis pages",
