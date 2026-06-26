@@ -1,5 +1,18 @@
 [
   {
+    "name": "Reverse DCF",
+    "slug": "reverse-dcf",
+    "status": "Live",
+    "description": "A single-page reverse DCF app that uses Wisesheets fundamentals and price data to estimate market-implied free-cash-flow growth.",
+    "folder": "reverse-dcf/",
+    "demo": "https://wisesheets-reverse-dcf-recipe.vercel.app",
+    "stack": ["HTML", "CSS", "JavaScript", "Vercel Functions"],
+    "apiEndpoints": ["/v1/companies", "/v1/financials", "/v1/prices/eod"],
+    "bestFor": "Reverse DCF analysis, valuation education, assumption sensitivity tools",
+    "difficulty": "Beginner",
+    "agentPrompt": "Read README.md, AGENTS.md, CUSTOMIZE.md, and the official API docs at https://www.wisesheets.io/api/docs. Help me customize this reverse DCF app. Keep WISESHEETS_API_KEY server-side and use the existing /api/proxy route."
+  },
+  {
     "name": "Fundamental Stock Dashboard",
     "slug": "fundamental-stock-dashboard",
     "status": "Live",

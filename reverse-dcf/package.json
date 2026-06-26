@@ -1,0 +1,10 @@
+{
+  "name": "wisesheets-reverse-dcf-recipe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes vercel dev",
+    "dev:local": "node local-dev.mjs",
+    "start": "npx --yes vercel dev"
+  }
+}

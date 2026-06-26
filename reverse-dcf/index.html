@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverse DCF — What the Market Believes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06070d;
+    --bg2: #0a0c16;
+    --panel: rgba(255,255,255,0.022);
+    --panel-2: rgba(255,255,255,0.045);
+    --border: rgba(255,255,255,0.08);
+    --border-2: rgba(255,255,255,0.14);
+    --text: #eef1f8;
+    --muted: #8b93a7;
+    --faint: #565d72;
+    --accent: #4f9eff;
+    --accent-2: #2dd4bf;
+    --teal: #2dd4bf;
+    --green: #34d399;
+    --red: #fb7185;
+    --amber: #fbbf24;
+    --bear: #fb7185;
+    --base: #6e8bff;
+    --bull: #34d399;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --grad: linear-gradient(120deg, #34d399 0%, #22d3ee 48%, #4f9eff 100%);
+    --grad-soft: linear-gradient(120deg, rgba(52,211,153,.18), rgba(34,211,238,.18));
+    --shadow: 0 24px 60px -20px rgba(0,0,0,.7);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Ambient background glow */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -2;
+    background:
+      radial-gradient(900px 600px at 18% -8%, rgba(110,139,255,.16), transparent 60%),
+      radial-gradient(900px 600px at 88% 4%, rgba(176,124,255,.13), transparent 55%),
+      radial-gradient(700px 700px at 60% 110%, rgba(58,214,197,.07), transparent 60%);
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: -1; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .grad-text {
+    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+
+  /* ───────────── Top bar ───────────── */
+  .topbar {
+    position: relative; z-index: 100;
+    display: flex; align-items: center; gap: 18px;
+    padding: 14px 28px;
+    background: rgba(8,9,16,.72);
+    backdrop-filter: blur(18px) saturate(140%);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+  .brand .glyph {
+    width: 34px; height: 34px; border-radius: 9px; position: relative;
+    background: linear-gradient(120deg, #1a8a68 0%, #198498 50%, #355fb0 100%);
+    box-shadow: 0 6px 16px -8px rgba(25,132,152,.5), inset 0 1px 0 rgba(255,255,255,.14);
+    display: grid; place-items: center;
+  }
+  .brand .glyph svg { width: 19px; height: 19px; }
+  .brand .name { font-weight: 800; font-size: 15px; letter-spacing: -0.02em; }
+  .brand .name b { font-weight: 800; }
+  .brand .name span { color: var(--faint); font-weight: 600; }
+
+  .topbar .spacer { flex: 1; }
+
+  /* Search */
+  .search-wrap { position: relative; width: 300px; }
+  .search-input {
+    width: 100%; height: 42px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 11px; color: var(--text);
+    padding: 0 14px 0 40px; font-size: 14px; font-weight: 600;
+    outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .search-input::placeholder { color: var(--faint); font-weight: 500; }
+  .search-input:focus { border-color: rgba(110,139,255,.6); box-shadow: 0 0 0 4px rgba(110,139,255,.12); }
+  .search-ico { position: absolute; left: 13px; top: 21px; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .ticker-dropdown {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    background: rgba(16,18,30,.96); backdrop-filter: blur(20px);
+    border: 1px solid var(--border-2); border-radius: 13px;
+    overflow: hidden; box-shadow: var(--shadow); z-index: 300; display: none;
+    padding: 6px;
+  }
+  .ticker-dropdown.open { display: block; animation: pop .14s ease; }
+  @keyframes pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .ticker-option { display: flex; align-items: center; gap: 11px; padding: 10px 12px; cursor: pointer; border-radius: 9px; transition: background .1s; }
+  .ticker-option:hover, .ticker-option.active { background: var(--panel-2); }
+  .ticker-option .sym { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); min-width: 56px; }
+  .ticker-option .co { font-size: 13px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .ticker-option .exch { font-size: 10px; color: var(--faint); font-weight: 600; letter-spacing: .04em; }
+  .ticker-searching { padding: 12px 14px; font-size: 12px; color: var(--muted); }
+  .quick-tickers { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .quick-tickers button {
+    border: 1px solid var(--border); background: var(--panel); color: var(--muted);
+    border-radius: 8px; padding: 4px 8px; font-family: var(--mono); font-size: 10px;
+    font-weight: 700; cursor: pointer; transition: border-color .12s, color .12s, background .12s;
+  }
+  .quick-tickers button:hover { border-color: var(--border-2); color: var(--text); background: var(--panel-2); }
+
+  /* Assumption controls */
+  .assumptions { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .ctrl { display: flex; flex-direction: column; gap: 6px; }
+  .ctrl > label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .09em; color: var(--faint); font-weight: 700; padding-left: 3px; }
+  .stepper {
+    display: flex; align-items: center; height: 44px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; transition: border-color .15s, box-shadow .15s;
+  }
+  .stepper:focus-within { border-color: rgba(79,158,255,.55); box-shadow: 0 0 0 4px rgba(79,158,255,.12); }
+  .stepper button {
+    width: 36px; height: 100%; border: none; background: transparent; color: var(--muted);
+    font-size: 20px; font-weight: 500; line-height: 1; cursor: pointer; display: grid; place-items: center;
+    transition: background .12s, color .12s; user-select: none;
+  }
+  .stepper button:hover { background: rgba(255,255,255,.08); color: var(--text); }
+  .stepper button:active { background: rgba(79,158,255,.22); color: #fff; }
+  .stepper input {
+    width: 42px; text-align: center; background: transparent; border: none; color: var(--text);
+    font-family: var(--mono); font-size: 16px; font-weight: 700; outline: none; -moz-appearance: textfield;
+  }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper .unit { color: var(--faint); font-family: var(--mono); font-size: 13px; font-weight: 600; padding-right: 10px; }
+  .seg-select {
+    height: 44px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text); padding: 0 14px; font-size: 13.5px; font-weight: 600; cursor: pointer; outline: none;
+    transition: border-color .15s;
+  }
+  .seg-select:focus { border-color: rgba(79,158,255,.55); }
+  .seg-select option { background: #14161f; }
+  .btn-analyze {
+    height: 42px; padding: 0 22px; border: none; border-radius: 11px;
+    background: linear-gradient(120deg, #1a8a68 0%, #198498 50%, #355fb0 100%);
+    color: #eafff7; font-size: 14px; font-weight: 700;
+    cursor: pointer; letter-spacing: -.01em; flex-shrink: 0;
+    box-shadow: 0 6px 16px -8px rgba(25,132,152,.5), inset 0 1px 0 rgba(255,255,255,.14);
+    transition: transform .12s, box-shadow .12s, filter .12s, opacity .12s;
+    display: flex; align-items: center; gap: 8px; align-self: flex-end;
+  }
+  .btn-analyze:hover { transform: translateY(-1px); filter: brightness(1.12); box-shadow: 0 10px 22px -8px rgba(25,132,152,.6); }
+  .btn-analyze:active { transform: translateY(0); }
+  .btn-analyze:disabled { opacity: .55; cursor: wait; }
+  .btn-analyze .spin { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+  .btn-analyze.loading .spin { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ───────────── Layout ───────────── */
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 26px 28px 80px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .col-2 { grid-column: 1 / -1; }
+
+  .card {
+    position: relative; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 18px; padding: 22px; overflow: hidden;
+    box-shadow: var(--shadow);
+    animation: rise .6s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .card.d1 { animation-delay: .05s; } .card.d2 { animation-delay: .1s; }
+  .card.d3 { animation-delay: .15s; } .card.d4 { animation-delay: .2s; } .card.d5 { animation-delay: .25s; }
+
+  .card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
+  .card-head .kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 700; }
+  .card-head .badge {
+    font-size: 9px; font-weight: 800; letter-spacing: .06em; padding: 3px 8px; border-radius: 99px;
+    background: var(--grad-soft); border: 1px solid rgba(34,211,238,.32); color: #aef0e2;
+  }
+  .card-head .info { margin-left: auto; font-size: 11px; color: var(--faint); }
+
+  /* ───────────── Hero ───────────── */
+  .hero { padding: 30px 34px; }
+  .hero-top { display: flex; align-items: center; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
+  .tkr-badge {
+    font-family: var(--mono); font-weight: 700; font-size: 14px; color: #fff;
+    background: var(--panel-2); border: 1px solid var(--border-2); border-radius: 9px; padding: 6px 11px;
+  }
+  .hero-co { font-size: 17px; font-weight: 700; }
+  .hero-exch { font-size: 12px; color: var(--faint); font-weight: 600; letter-spacing: .04em; }
+  .hero-price { margin-left: auto; display: flex; align-items: flex-end; gap: 7px; flex-direction: column; }
+  .price-line { display: flex; align-items: baseline; gap: 10px; }
+  .hero-price .px { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+  .hero-price .chg { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+  .price-meta { font-size: 10px; color: var(--faint); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+  .chg.up { color: var(--green); } .chg.down { color: var(--red); }
+
+  .hero-main { display: grid; grid-template-columns: minmax(0, 1.05fr) 1fr; gap: 40px; align-items: center; }
+  @media (max-width: 880px) { .hero-main { grid-template-columns: 1fr; gap: 26px; } }
+
+  .hero-statement { font-family: var(--serif); font-size: 33px; line-height: 1.28; letter-spacing: .01em; color: #d4daea; }
+  .hero-statement em { font-style: normal; }
+  .hero-statement .n { font-style: normal; font-weight: 400; }
+  .hero-statement .hi { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 400; }
+  .hero-statement .lo { color: #fff; border-bottom: 2px solid var(--border-2); }
+
+  .hero-focal { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .focal-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); font-weight: 700; }
+  .focal-num { font-family: var(--mono); font-size: 92px; font-weight: 700; line-height: .9; letter-spacing: -.03em; }
+  .focal-sub { font-size: 13px; color: var(--muted); }
+  .verdict {
+    margin-top: 14px; display: inline-flex; align-items: center; gap: 9px;
+    padding: 9px 16px; border-radius: 12px; font-weight: 700; font-size: 14px;
+    border: 1px solid; letter-spacing: -.01em;
+  }
+  .verdict .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .verdict.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.35); color: #6ee7b7; }
+  .verdict.blue { background: rgba(110,139,255,.1); border-color: rgba(110,139,255,.35); color: #a9bbff; }
+  .verdict.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.35); color: #fcd34d; }
+  .verdict.red { background: rgba(251,113,133,.1); border-color: rgba(251,113,133,.35); color: #fda4af; }
+  .verdict.green .dot { background: var(--green); } .verdict.blue .dot { background: var(--accent); }
+  .verdict.amber .dot { background: var(--amber); } .verdict.red .dot { background: var(--red); }
+
+  /* Key stat chips */
+  .stat-row { display: flex; gap: 0; margin-top: 28px; border-top: 1px solid var(--border); padding-top: 20px; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 110px; padding: 0 18px; border-right: 1px solid var(--border); }
+  .stat:first-child { padding-left: 0; } .stat:last-child { border-right: none; }
+  .stat .k { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); font-weight: 700; margin-bottom: 5px; }
+  .stat .v { font-family: var(--mono); font-size: 19px; font-weight: 600; }
+
+  /* ───────────── Growth spectrum ───────────── */
+  .spectrum { padding: 30px 18px 10px; position: relative; }
+  .spec-track { position: relative; height: 4px; border-radius: 99px; background: linear-gradient(90deg, rgba(52,211,153,.25), rgba(251,191,36,.25), rgba(251,113,133,.25)); margin: 0 10px; }
+  .spec-band { position: absolute; top: -3px; height: 10px; border-radius: 99px; background: rgba(110,139,255,.18); border: 1px solid rgba(110,139,255,.4); }
+  .spec-tick { position: absolute; top: 50%; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; }
+  .spec-tick .pin { width: 2px; height: 18px; background: var(--muted); border-radius: 2px; }
+  .spec-tick .lab { position: absolute; top: 22px; white-space: nowrap; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .spec-tick .val { position: absolute; top: 35px; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .spec-implied { position: absolute; top: 50%; transform: translate(-50%,-50%); z-index: 5; display: flex; flex-direction: column; align-items: center; transition: left .8s cubic-bezier(.2,.7,.3,1); }
+  .spec-implied .glow { width: 20px; height: 20px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 0 5px rgba(34,211,238,.2), 0 0 24px rgba(52,211,153,.6); border: 2px solid #fff; }
+  .spec-implied .flag { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: rgba(16,18,30,.9); border: 1px solid var(--border-2); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; }
+  .spec-implied.edge-left .flag { left: 0; transform: none; }
+  .spec-implied.edge-right .flag { left: auto; right: 0; transform: none; }
+  .spec-implied .flag .pct { font-family: var(--mono); }
+  .spec-scale { display: flex; justify-content: space-between; margin: 56px 10px 0; font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .spec-caption { text-align: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .spec-caption b { color: var(--text); font-weight: 600; }
+
+  /* ───────────── History bars ───────────── */
+  .bars { display: flex; align-items: flex-end; gap: 14px; height: 200px; padding-top: 28px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; gap: 0; }
+  .bar-val { font-family: var(--mono); font-size: 12px; font-weight: 600; margin-bottom: 7px; white-space: nowrap; }
+  .bar-shape { width: 100%; max-width: 46px; border-radius: 7px 7px 3px 3px; background: linear-gradient(180deg, var(--accent), rgba(110,139,255,.35)); position: relative; transition: height .8s cubic-bezier(.2,.7,.3,1); box-shadow: inset 0 1px 0 rgba(255,255,255,.3); }
+  .bar-shape.neg { background: linear-gradient(180deg, rgba(251,113,133,.6), var(--red)); }
+  .bar-foot { margin-top: 10px; text-align: center; }
+  .bar-yr { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+  .bar-mgn { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .bar-src { font-size: 9px; margin-top: 4px; }
+  .bar-src a { color: var(--accent); text-decoration: none; opacity: .7; font-weight: 600; }
+  .bar-src a:hover { opacity: 1; text-decoration: underline; }
+  .hist-foot { display: flex; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .mini-stat { flex: 1; }
+  .mini-stat .k { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 700; margin-bottom: 3px; }
+  .mini-stat .v { font-family: var(--mono); font-size: 16px; font-weight: 700; }
+
+  /* ───────────── Honesty ───────────── */
+  .honesty-top { display: flex; align-items: center; gap: 22px; margin-bottom: 18px; }
+  .ring-wrap { position: relative; width: 116px; height: 116px; flex-shrink: 0; }
+  .ring-wrap .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-wrap .num b { font-family: var(--mono); font-size: 30px; font-weight: 700; line-height: 1; }
+  .ring-wrap .num small { font-size: 9px; color: var(--faint); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin-top: 3px; }
+  .honesty-verdict .hv-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+  .honesty-verdict .hv-sub { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .flags { display: flex; flex-direction: column; gap: 8px; }
+  .flag-item { display: flex; gap: 11px; align-items: flex-start; background: var(--panel); border: 1px solid var(--border); border-left-width: 3px; border-radius: 9px; padding: 10px 13px; }
+  .flag-item .fi { font-size: 15px; line-height: 1.3; flex-shrink: 0; }
+  .flag-item .ft { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; }
+  .flag-item .fd { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+
+  /* ───────────── Scenario + football ───────────── */
+  .scen-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .scen-block { background: var(--panel); border: 1px solid var(--border); border-radius: 13px; padding: 14px 15px; transition: border-color .2s; }
+  .scen-block.bear { border-top: 2px solid var(--bear); }
+  .scen-block.base { border-top: 2px solid var(--base); }
+  .scen-block.bull { border-top: 2px solid var(--bull); }
+  .scen-block h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .scen-block h4 .tag { font-size: 9px; padding: 2px 7px; border-radius: 99px; font-weight: 800; }
+  .scen-block.bear h4 { color: var(--bear); } .scen-block.base h4 { color: var(--base); } .scen-block.bull h4 { color: var(--bull); }
+  .scen-block.bear .tag { background: rgba(251,113,133,.15); } .scen-block.base .tag { background: rgba(110,139,255,.15); } .scen-block.bull .tag { background: rgba(52,211,153,.15); }
+  .scen-param { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .scen-param:last-child { margin-bottom: 0; }
+  .scen-param label { font-size: 11.5px; color: var(--muted); }
+  .stepper.compact { height: 38px; border-radius: 10px; }
+  .stepper.compact button { width: 30px; font-size: 18px; }
+  .stepper.compact input { width: 46px; font-size: 14px; }
+  .stepper.compact .unit { font-size: 12px; padding-right: 8px; }
+
+  .ff-chart { position: relative; margin-top: 8px; }
+  .ff-priceline { position: absolute; top: 0; bottom: 30px; width: 2px; background: #fff; z-index: 8; box-shadow: 0 0 12px rgba(255,255,255,.6); transition: left .8s cubic-bezier(.2,.7,.3,1); }
+  .ff-priceline .plab { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: #fff; color: #06070d; font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 7px; }
+  .ff-priceline .plab::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #fff; }
+  .ff-row { display: grid; grid-template-columns: 64px 1fr 152px; align-items: center; height: 46px; }
+  .ff-name { font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+  .ff-name.bear { color: var(--bear); } .ff-name.base { color: var(--base); } .ff-name.bull { color: var(--bull); }
+  .ff-track { position: relative; height: 30px; }
+  .ff-track .grid-base { position: absolute; inset: 0; border-radius: 8px; background: var(--panel); border: 1px solid var(--border); }
+  .ff-bar { position: absolute; top: 4px; height: 22px; border-radius: 6px; transition: all .8s cubic-bezier(.2,.7,.3,1); box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
+  .ff-dot { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 13px; height: 13px; border-radius: 50%; border: 2px solid #fff; z-index: 6; transition: left .8s cubic-bezier(.2,.7,.3,1); box-shadow: 0 0 10px rgba(0,0,0,.5); }
+  .ff-meta { text-align: right; display: flex; flex-direction: column; gap: 1px; }
+  .ff-meta .fv { font-family: var(--mono); font-size: 15px; font-weight: 700; }
+  .ff-meta .fm { font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .fm.pos { color: var(--green); } .fm.neg { color: var(--red); }
+  .ff-axis { display: flex; justify-content: space-between; margin-top: 8px; padding-left: 64px; padding-right: 152px; }
+  .ff-axis span { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+
+  /* ───────────── Heatmap ───────────── */
+  .hm-legend { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 10px; color: var(--faint); }
+  .hm-legend .ramp { width: 90px; height: 8px; border-radius: 99px; background: linear-gradient(90deg, #f43f5e, #fbbf24, #34d399); }
+  .heatmap-scroll { overflow-x: auto; margin: 0 -6px; padding: 6px; }
+  .heatmap { border-collapse: separate; border-spacing: 3px; width: 100%; }
+  .heatmap th { font-family: var(--mono); font-size: 10.5px; color: var(--muted); font-weight: 600; padding: 4px; text-align: center; }
+  .heatmap th.rowh { text-align: right; padding-right: 8px; }
+  .heatmap th.corner { color: var(--faint); font-size: 9px; text-align: right; }
+  .heatmap td {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; text-align: center;
+    padding: 7px 4px; border-radius: 6px; min-width: 46px; cursor: default;
+    transition: transform .1s; position: relative;
+  }
+  .heatmap td:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+  .heatmap td.at-price { box-shadow: inset 0 0 0 2px #fff, 0 0 14px rgba(255,255,255,.35); }
+  .hm-axis-x { text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); font-weight: 700; margin-top: 10px; }
+
+  /* ───────────── Loading / error ───────────── */
+  #loading { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 18px; background: rgba(6,7,13,.6); backdrop-filter: blur(6px); }
+  #loading.show { display: flex; }
+  #loading .lspin { width: 46px; height: 46px; border: 3px solid rgba(255,255,255,.12); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  #loading .ltext { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .empty-state { margin-bottom: 18px; padding: 20px 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--muted); }
+  .empty-state b { display: block; color: var(--text); font-size: 15px; margin-bottom: 4px; }
+  .empty-state span { font-size: 13px; }
+  .error-box { background: rgba(251,113,133,.08); border: 1px solid rgba(251,113,133,.4); border-radius: 14px; padding: 18px 22px; color: #fda4af; font-weight: 600; margin-bottom: 18px; }
+  .data-note { margin-bottom: 18px; padding: 12px 14px; border: 1px solid rgba(251,191,36,.32); border-radius: 12px; background: rgba(251,191,36,.07); color: #fcd34d; font-size: 12px; font-weight: 600; display: none; }
+  .data-note.show { display: block; }
+
+  #results { display: none; }
+  #results.show { display: block; }
+
+  /* footer */
+  .foot { text-align: center; margin-top: 40px; font-size: 11.5px; color: var(--faint); }
+  .foot a { color: var(--muted); text-decoration: none; }
+  .foot a:hover { color: var(--text); }
+  .disclaimer { margin-top: 8px; color: var(--faint); }
+
+  @media (max-width: 920px) {
+    .grid { grid-template-columns: 1fr; }
+    .focal-num { font-size: 68px; }
+    .hero-statement { font-size: 26px; }
+    /* Topbar: brand stays row 1, search row 2, controls row 3 */
+    .topbar { flex-wrap: wrap; padding: 12px 16px; gap: 10px; }
+    .spacer { display: none; }
+    .search-wrap { order: 2; flex: 1 1 100%; width: auto; }
+    .assumptions { order: 3; flex: 1 1 100%; }
+    .btn-analyze { margin-left: auto; }
+    .wrap { padding: 16px 14px 60px; }
+    /* Scenario sandbox: stack Bear/Base/Bull vertically */
+    .scen-inputs { grid-template-columns: 1fr; }
+    /* Card heads: allow wrapping so badge/info don't overflow */
+    .card-head { flex-wrap: wrap; row-gap: 5px; }
+  }
+
+  @media (max-width: 760px) {
+    .wrap { padding: 12px 12px 60px; }
+    .card { padding: 16px; border-radius: 14px; }
+    .hero { padding: 16px; }
+    .hero-price { margin-left: 0; align-items: flex-start; width: 100%; }
+    .assumptions { align-items: flex-end; }
+    .btn-analyze { width: 100%; justify-content: center; }
+
+    /* Section headings — fit on one line */
+    .card-head .kicker { font-size: 9.5px; letter-spacing: .07em; }
+    .card-head .info { margin-left: 0; font-size: 10px; }
+    .card-head .badge { white-space: nowrap; font-size: 8px; padding: 3px 6px; }
+
+    /* Growth spectrum — hide verbose tick labels; only keep values */
+    .spectrum { padding: 34px 6px 10px; overflow: visible; }
+    .spec-track { margin: 0 22px; }
+    .spec-tick .lab { display: none; }
+    .spec-tick .val { top: 22px; font-size: 9px; }
+    .spec-implied .flag { bottom: 28px; max-width: 132px; overflow: hidden; text-overflow: ellipsis; font-size: 10px; padding: 5px 8px; }
+    .spec-implied.edge-right .flag { right: -18px; }
+    .spec-implied.edge-left .flag { left: -18px; }
+    .spec-scale { margin-top: 38px; font-size: 9px; }
+    .spec-caption { font-size: 11.5px; }
+
+    /* Scenario controls — keep signed percentages readable on narrow screens */
+    .scen-block { padding: 18px 16px; border-radius: 13px; }
+    .scen-block h4 { margin-bottom: 18px; gap: 9px; }
+    .scen-param { gap: 14px; margin-bottom: 20px; }
+    .scen-param label { flex: 1; min-width: 104px; font-size: 13px; }
+    .stepper.compact { width: min(224px, 58vw); height: 46px; flex-shrink: 0; border-radius: 12px; }
+    .stepper.compact button { width: 40px; font-size: 20px; }
+    .stepper.compact input { width: 78px; min-width: 78px; font-size: 16px; }
+    .stepper.compact .unit { min-width: 18px; padding-right: 8px; text-align: left; }
+
+    /* FCF bars — tighter gap + smaller type so 5 bars fit */
+    .bars { gap: 6px; height: 170px; }
+    .bar-val { font-size: 9px; margin-bottom: 4px; }
+    .bar-yr { font-size: 10px; }
+    .bar-mgn { font-size: 8px; }
+    .bar-src { display: none; }
+    .hist-foot { gap: 6px; }
+    .mini-stat .v { font-size: 14px; }
+
+    /* Hero stats — 3×2 grid */
+    .stat { min-width: calc(50% - 9px); }
+    .stat .v { font-size: 15px; }
+
+    /* Football field — narrower name/value columns; fewer axis labels via JS */
+    .ff-row { grid-template-columns: 40px 1fr 80px; }
+    .ff-axis { padding-left: 40px; padding-right: 80px; }
+    .ff-axis span { font-size: 9px; }
+    .ff-meta .fv { font-size: 12px; }
+    .ff-meta .fm { font-size: 10px; }
+    .ff-name { font-size: 11px; letter-spacing: .02em; }
+
+    /* Heatmap legend ramp — shrink on mobile */
+    .hm-legend .ramp { width: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ───────────── Top bar ───────────── -->
+<div class="topbar">
+  <div class="brand">
+    <div class="glyph">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 3 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 6h4v4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="name"><b>Reverse</b> <span>DCF</span></div>
+  </div>
+
+	  <div class="search-wrap">
+	    <span class="search-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+	    <input class="search-input" id="tickerSearch" autocomplete="off" placeholder="Search company or ticker…" value="AAPL" oninput="onTickerInput(this.value)" onkeydown="onTickerKey(event)">
+	    <input type="hidden" id="ticker" value="AAPL">
+	    <div class="ticker-dropdown" id="tickerDropdown"></div>
+	    <div class="quick-tickers" aria-label="Sample tickers">
+	      <button type="button" onclick="selectTicker('AAPL')">AAPL</button>
+	      <button type="button" onclick="selectTicker('MSFT')">MSFT</button>
+	      <button type="button" onclick="selectTicker('NVDA')">NVDA</button>
+	      <button type="button" onclick="selectTicker('COST')">COST</button>
+	      <button type="button" onclick="selectTicker('TSLA')">TSLA</button>
+	    </div>
+	  </div>
+
+  <div class="spacer"></div>
+
+  <div class="assumptions">
+    <div class="ctrl">
+      <label>Discount Rate</label>
+      <div class="stepper">
+        <button type="button" tabindex="-1" onclick="step('wacc',-0.5)">−</button>
+        <input id="wacc" type="number" value="10" step=".5" min="4" max="30" onchange="clampInput(this);recompute()">
+        <span class="unit">%</span>
+        <button type="button" tabindex="-1" onclick="step('wacc',0.5)">+</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>Terminal Growth</label>
+      <div class="stepper">
+        <button type="button" tabindex="-1" onclick="step('tgr',-0.5)">−</button>
+        <input id="tgr" type="number" value="3" step=".5" min="0" max="6" onchange="clampInput(this);recompute()">
+        <span class="unit">%</span>
+        <button type="button" tabindex="-1" onclick="step('tgr',0.5)">+</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>Terminal Method</label>
+      <select class="seg-select" id="termMode">
+        <option value="gordon">Perpetuity Growth</option>
+        <option value="multiple">Exit Multiple</option>
+      </select>
+    </div>
+    <div class="ctrl" id="exitMultipleField" style="display:none;">
+      <label>Exit Multiple</label>
+      <div class="stepper">
+        <button type="button" tabindex="-1" onclick="step('exitMultiple',-1)">−</button>
+        <input id="exitMultiple" type="number" value="20" step="1" min="5" max="50" onchange="clampInput(this);recompute()">
+        <span class="unit">×</span>
+        <button type="button" tabindex="-1" onclick="step('exitMultiple',1)">+</button>
+      </div>
+    </div>
+
+    <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+      <span class="spin"></span><span class="lbl">Analyze</span>
+    </button>
+  </div>
+</div>
+
+<div id="loading"><div class="lspin"></div><div class="ltext" id="loadingText">Pulling SEC-tagged fundamentals…</div></div>
+
+	<div class="wrap">
+	  <div id="errorSlot"></div>
+	  <div class="empty-state" id="emptyState">
+	    <b>Ready to run a reverse DCF.</b>
+	    <span>Pick a sample ticker or search a company. The app will pull Wisesheets fundamentals, latest price data, and calculate the market-implied FCF growth rate.</span>
+	  </div>
+	  <div class="data-note" id="dataNote"></div>
+
+	  <div id="results">
+    <!-- ───── Hero ───── -->
+    <div class="card hero col-2 d1" style="margin-bottom:18px;">
+      <div class="hero-top">
+        <span class="tkr-badge" id="heroTkr">AAPL</span>
+	        <span class="hero-co" id="heroCo">—</span>
+	        <span class="hero-exch" id="heroExch"></span>
+	        <div class="hero-price">
+	          <div class="price-line"><span class="px mono" id="heroPx">—</span><span class="chg mono" id="heroChg"></span></div>
+	          <div class="price-meta" id="dataAsOf">—</div>
+	        </div>
+	      </div>
+      <div class="hero-main">
+        <div class="hero-statement" id="heroStatement"></div>
+        <div class="hero-focal">
+          <div class="focal-label">Market-Implied FCF Growth</div>
+          <div class="focal-num grad-text" id="focalNum">—</div>
+          <div class="focal-sub" id="focalSub">compounded annually · 5-year explicit window</div>
+          <div class="verdict" id="verdict"><span class="dot"></span><span id="verdictText">—</span></div>
+        </div>
+      </div>
+      <div class="stat-row" id="statRow"></div>
+    </div>
+
+    <!-- ───── Growth spectrum ───── -->
+    <div class="card col-2 d2" style="margin-bottom:18px;">
+      <div class="card-head">
+        <span class="kicker">Reality Check — Implied vs. Delivered</span>
+        <span class="badge">THE ANCHOR</span>
+        <span class="info" id="specInfo"></span>
+      </div>
+      <div class="spectrum" id="spectrum"></div>
+    </div>
+
+    <div class="grid" style="margin-bottom:18px;">
+      <!-- ───── History ───── -->
+      <div class="card d3">
+        <div class="card-head"><span class="kicker">5-Year Free Cash Flow</span><span class="info">Every figure → SEC 10-K</span></div>
+        <div class="bars" id="bars"></div>
+        <div class="hist-foot" id="histFoot"></div>
+      </div>
+
+      <!-- ───── Honesty ───── -->
+      <div class="card d4">
+        <div class="card-head"><span class="kicker">Assumption Honesty Score</span><span class="badge">CANDOR</span></div>
+        <div class="honesty-top">
+          <div class="ring-wrap">
+            <svg width="116" height="116" viewBox="0 0 116 116">
+              <circle cx="58" cy="58" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="9"/>
+              <circle id="ringFill" cx="58" cy="58" r="50" fill="none" stroke="url(#ringGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 58 58)" style="transition: stroke-dashoffset 1s cubic-bezier(.2,.7,.3,1);"/>
+              <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#4f9eff"/></linearGradient></defs>
+            </svg>
+            <div class="num"><b id="scoreNum">—</b><small>/ 100</small></div>
+          </div>
+          <div class="honesty-verdict">
+            <div class="hv-title" id="hvTitle">—</div>
+            <div class="hv-sub" id="hvSub"></div>
+          </div>
+        </div>
+        <div class="flags" id="flags"></div>
+      </div>
+    </div>
+
+    <!-- ───── Scenario sandbox + football field ───── -->
+    <div class="card col-2 d5" style="margin-bottom:18px;">
+      <div class="card-head"><span class="kicker">Scenario Sandbox</span><span class="badge">FOOTBALL FIELD</span><span class="info">Seeded from history · fully editable</span></div>
+      <div class="scen-inputs" id="scenInputs"></div>
+      <div class="ff-chart" id="ffChart"></div>
+    </div>
+
+    <!-- ───── Heatmap ───── -->
+    <div class="card col-2 d5">
+      <div class="card-head">
+        <span class="kicker">Sensitivity — Intrinsic Value / Share</span>
+        <span class="badge">HEATMAP</span>
+        <div class="hm-legend"><span>Low</span><span class="ramp"></span><span>High</span></div>
+      </div>
+      <div class="heatmap-scroll"><table class="heatmap" id="heatmap"></table></div>
+      <div class="hm-axis-x">↑ FCF growth rate &nbsp;·&nbsp; → discount rate (WACC) &nbsp;·&nbsp; ⬜ outline = cells matching today's price</div>
+    </div>
+
+	    <div class="foot">
+	      Data: <a href="https://www.wisesheets.io/api" target="_blank" rel="noopener">Wisesheets API</a> — standardized from SEC XBRL filings ·
+	      Reverse DCF solves for the FCF growth rate that sets PV(cash flows) equal to today's enterprise value.
+	      <div class="disclaimer">Educational example only. Not investment advice.</div>
+	    </div>
+  </div>
+</div>
+
+<script>
+// ─── Origin / fetch ───────────────────────────────────────────────────────────
+const API_PREFIX = '/api/proxy';
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function showError(message) {
+  document.getElementById('errorSlot').innerHTML = `<div class="error-box">⚠ ${escapeHtml(message)}</div>`;
+}
+
+function friendlyApiError(status, payload) {
+  const text = typeof payload === 'string' ? payload : JSON.stringify(payload || {});
+  if (/missing WISESHEETS_API_KEY/i.test(text)) return 'Missing WISESHEETS_API_KEY. Add it in Vercel project settings or your local .env.local file.';
+  if (status === 401 || status === 403) return 'Wisesheets rejected the request. Check that your API key is valid and has access to these endpoints.';
+  if (status === 404) return 'That ticker or Wisesheets endpoint was not found.';
+  if (status === 429) return 'Wisesheets rate limit reached. Wait a minute and try again.';
+  if (status >= 500) return 'Wisesheets request failed upstream. Try again shortly.';
+  return `Wisesheets request failed (${status}).`;
+}
+
+async function apiFetch(path, params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(qs ? `${API_PREFIX}${path}?${qs}` : `${API_PREFIX}${path}`);
+  if (!res.ok) {
+    let payload;
+    try { payload = await res.clone().json(); }
+    catch { payload = await res.text(); }
+    throw new Error(friendlyApiError(res.status, payload));
+  }
+  return res.json();
+}
+
+function applyUrlState() {
+  const params = new URLSearchParams(location.search);
+  const ticker = (params.get('ticker') || '').trim().toUpperCase();
+  if (ticker) {
+    document.getElementById('ticker').value = ticker;
+    document.getElementById('tickerSearch').value = ticker;
+  }
+  [['wacc', 'wacc'], ['tgr', 'tgr'], ['exitMultiple', 'exitMultiple']].forEach(([id, key]) => {
+    const val = params.get(key);
+    if (val !== null && !isNaN(parseFloat(val))) {
+      const el = document.getElementById(id);
+      el.value = val;
+      clampInput(el);
+    }
+  });
+  const termMode = params.get('termMode');
+  if (['gordon', 'multiple'].includes(termMode)) document.getElementById('termMode').value = termMode;
+  document.getElementById('exitMultipleField').style.display = document.getElementById('termMode').value === 'multiple' ? 'flex' : 'none';
+}
+
+function updateUrlState() {
+  const params = new URLSearchParams({
+    ticker: document.getElementById('ticker').value.trim().toUpperCase(),
+    wacc: document.getElementById('wacc').value,
+    tgr: document.getElementById('tgr').value,
+    termMode: document.getElementById('termMode').value
+  });
+  if (document.getElementById('termMode').value === 'multiple') params.set('exitMultiple', document.getElementById('exitMultiple').value);
+  history.replaceState(null, '', `${location.pathname}?${params.toString()}`);
+}
+
+let state = {};
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  const typed = document.getElementById('tickerSearch').value.trim().toUpperCase();
+  if (typed) document.getElementById('ticker').value = typed;
+  const ticker   = document.getElementById('ticker').value.trim().toUpperCase();
+  const wacc     = parseFloat(document.getElementById('wacc').value) / 100;
+  const tgr      = parseFloat(document.getElementById('tgr').value) / 100;
+  const termMode = document.getElementById('termMode').value;
+  const exitMult = parseFloat(document.getElementById('exitMultiple').value);
+  if (!ticker) { showError('Enter a ticker symbol.'); return; }
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true; btn.classList.add('loading'); btn.querySelector('.lbl').textContent = 'Analyzing';
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('loadingText').textContent = `Pulling Wisesheets data for ${ticker}...`;
+  document.getElementById('errorSlot').innerHTML = '';
+  document.getElementById('dataNote').classList.remove('show');
+
+  try {
+    const [cfData, priceData] = await Promise.all([
+      apiFetch('/financials', {
+        tickers: ticker,
+        metrics: 'free_cash_flow,revenue,net_income,shares_outstanding,net_debt,operating_cash_flow,capital_expenditures',
+        period: 'last5y', frequency: 'annual', layout: 'long'
+      }),
+      apiFetch('/prices/eod', { tickers: ticker, period: 'latest', fields: 'close,change,changePercent' })
+    ]);
+
+    const priceRow = priceData.data?.[0];
+    const price = parseFloat(priceRow?.close ?? priceRow?.adjClose);
+    if (!price || isNaN(price)) throw new Error('Could not parse current price.');
+    const dayChg = parseFloat(priceRow?.change ?? 'NaN');
+    const dayChgPct = parseFloat(priceRow?.changePercent ?? 'NaN');
+    const priceDate = priceRow?.date ?? priceRow?.calendarDate ?? priceRow?.timestamp ?? priceRow?.updatedAt;
+
+    const rows = cfData.data ?? [];
+    if (!rows.length) throw new Error(`No annual financial history found for ${ticker}. Try another ticker or confirm Wisesheets coverage.`);
+    const companyName = rows[0]?.companyName ?? ticker;
+    const byYear = {};
+    rows.forEach(r => {
+      const yr = r.fiscalYear ?? r.fiscal_year ?? r.year;
+      if (!yr) return;
+      if (!byYear[yr]) byYear[yr] = { year: yr, sources: {} };
+      const val = parseFloat(r.value);
+      byYear[yr][r.metric] = isNaN(val) ? null : val;
+      if (r.source?.filingUrl || r.source?.accession)
+        byYear[yr].sources[r.metric] = { url: r.source.filingUrl, tag: r.source.tag };
+    });
+
+    const years = Object.keys(byYear).sort().slice(-5);
+    if (years.length < 2) throw new Error('Not enough historical data (need ≥ 2 years).');
+    const histRows = years.map(y => byYear[y]);
+    const latest = histRows[histRows.length - 1];
+    const shares = latest.shares_outstanding;
+    if (!shares) throw new Error('shares_outstanding missing from API response.');
+    const netDebt = latest.net_debt ?? 0;
+    const marketCap = price * shares;
+
+    const fcfSeries = histRows.map(r => r.free_cash_flow ?? (r.operating_cash_flow - Math.abs(r.capital_expenditures ?? 0)));
+    const revSeries = histRows.map(r => r.revenue ?? 0);
+
+    const fcf5yrCAGR = cagr(fcfSeries[0], fcfSeries[fcfSeries.length - 1], years.length - 1);
+    const chartBaseCAGR = Number.isFinite(fcf5yrCAGR) ? fcf5yrCAGR : 0;
+    let bull = -Infinity, bear = Infinity;
+    for (let i = 0; i + 3 < fcfSeries.length; i++) {
+      const g = cagr(fcfSeries[i], fcfSeries[i + 3], 3);
+      if (isFinite(g)) { bull = Math.max(bull, g); bear = Math.min(bear, g); }
+    }
+    if (!isFinite(bull)) bull = chartBaseCAGR * 1.5;
+    if (!isFinite(bear)) bear = chartBaseCAGR * 0.3;
+    const latestFCF = fcfSeries[fcfSeries.length - 1];
+    if (!latestFCF || latestFCF <= 0) throw new Error(`${ticker} has zero or negative latest free cash flow. A reverse DCF needs positive current FCF to solve for implied growth.`);
+
+    const impliedGrowth = reverseDCF(marketCap, netDebt, latestFCF, wacc, tgr, 5, termMode, exitMult);
+    const hasNegativeFCF = fcfSeries.some(v => v <= 0);
+
+    state = {
+      ticker, companyName, exchange: '', price, dayChg, dayChgPct, shares, netDebt, marketCap,
+      wacc, tgr, termMode, exitMult, latestFCF, impliedGrowth, histRows, fcfSeries, revSeries, years,
+      fcf5yrCAGR, chartBaseCAGR, fcfBullCAGR: bull, fcfBearCAGR: bear, priceDate, hasNegativeFCF,
+      scenarios: {
+        bear: { growth: round2(bear * 100), wacc: round2(wacc * 100) + 2, tgr: round2(tgr * 100) },
+        base: { growth: round2(chartBaseCAGR * 100), wacc: round2(wacc * 100), tgr: round2(tgr * 100) },
+        bull: { growth: round2(bull * 100), wacc: round2(wacc * 100) - 1, tgr: round2(tgr * 100) + 0.5 }
+      }
+    };
+
+    updateUrlState();
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('results').classList.add('show');
+    renderHero();
+    renderSpectrum();
+    renderHistory();
+    renderScenarioInputs();
+    recalcScenarios();
+    renderHonesty();
+    renderHeatmap();
+
+  } catch (err) {
+    showError(err.message);
+    console.error(err);
+  } finally {
+    document.getElementById('loading').classList.remove('show');
+    btn.disabled = false; btn.classList.remove('loading'); btn.querySelector('.lbl').textContent = 'Analyze';
+  }
+}
+
+// ─── Math ──────────────────────────────────────────────────────────────────────
+function cagr(s, e, n) {
+  if (!s || !e || n <= 0 || s <= 0 || e <= 0) return NaN;
+  return Math.pow(e / s, 1 / n) - 1;
+}
+function round2(n) { return Math.round(n * 100) / 100; }
+function fmtPct(n, d = 1) { return (n >= 0 ? '+' : '') + n.toFixed(d) + '%'; }
+function fmtCagr(n) { return Number.isFinite(n) ? (n * 100).toFixed(1) + '%' : 'N/M'; }
+function formatDataDate(value) {
+  if (!value) return 'latest EOD';
+  const date = new Date(value);
+  if (isNaN(date)) return String(value).slice(0, 10);
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+function fmtMoney(n) {
+  const a = Math.abs(n);
+  if (a >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+  if (a >= 1e9)  return '$' + (n / 1e9).toFixed(2) + 'B';
+  if (a >= 1e6)  return '$' + (n / 1e6).toFixed(1) + 'M';
+  return '$' + (n?.toFixed(0) ?? '—');
+}
+function dcfValue(fcf0, g, w, tg, years, termMode, exitMult) {
+  if (w <= 0) return Infinity;
+  let pv = 0, fcf = fcf0;
+  for (let t = 1; t <= years; t++) { fcf *= (1 + g); pv += fcf / Math.pow(1 + w, t); }
+  let tv;
+  if (termMode === 'gordon') { const sp = w - tg; tv = sp > 0.001 ? (fcf * (1 + tg)) / sp : fcf * 50; }
+  else tv = fcf * exitMult;
+  return pv + tv / Math.pow(1 + w, years);
+}
+function reverseDCF(mktCap, netDebt, fcf0, w, tg, years, termMode, exitMult) {
+  const target = mktCap + netDebt;
+  let lo = -0.5, hi = 5.0, mid;
+  for (let i = 0; i < 100; i++) {
+    mid = (lo + hi) / 2;
+    dcfValue(fcf0, mid, w, tg, years, termMode, exitMult) < target ? lo = mid : hi = mid;
+  }
+  return mid;
+}
+
+// ─── Assumption controls ─────────────────────────────────────────────────────
+function clampInput(el) {
+  let v = parseFloat(el.value);
+  const min = parseFloat(el.min), max = parseFloat(el.max);
+  if (isNaN(v)) v = min || 0;
+  if (!isNaN(min) && v < min) v = min;
+  if (!isNaN(max) && v > max) v = max;
+  el.value = Math.round(v * 100) / 100;
+}
+function step(id, delta, after) {
+  const el = document.getElementById(id);
+  el.value = Math.round(((parseFloat(el.value) || 0) + delta) * 100) / 100;
+  clampInput(el);
+  (after || recompute)();
+}
+// Recompute everything from cached fundamentals — no refetch needed when only assumptions change
+function recompute() {
+  if (!state.ticker) return;
+  state.wacc = parseFloat(document.getElementById('wacc').value) / 100;
+  state.tgr = parseFloat(document.getElementById('tgr').value) / 100;
+  state.termMode = document.getElementById('termMode').value;
+  state.exitMult = parseFloat(document.getElementById('exitMultiple').value);
+  state.impliedGrowth = reverseDCF(state.marketCap, state.netDebt, state.latestFCF, state.wacc, state.tgr, 5, state.termMode, state.exitMult);
+  updateUrlState();
+  renderHero(); renderSpectrum(); renderHistory(); renderHonesty(); renderHeatmap(); recalcScenarios();
+}
+
+// ─── Count-up animation ──────────────────────────────────────────────────────
+function animateCount(el, to, { decimals = 1, suffix = '', prefix = '', sign = false, dur = 1000 } = {}) {
+  const start = performance.now();
+  function frame(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const e = 1 - Math.pow(1 - t, 3);
+    const v = to * e;
+    el.textContent = (sign && v >= 0 ? '+' : '') + prefix + v.toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ─── Verdict logic ───────────────────────────────────────────────────────────
+function computeVerdict(implied, base, bull) {
+  if (implied <= base)      return { tone: 'green', label: 'Undemanding',          blurb: 'The price asks for less growth than the company has already delivered.' };
+  if (implied <= bull)      return { tone: 'blue',  label: 'Optimistic',           blurb: 'Achievable only at the company\'s best historical pace.' };
+  if (implied <= bull * 1.5 && implied <= base + 12)
+                            return { tone: 'amber', label: 'Demanding',            blurb: 'Above anything the company has sustained over a three-year stretch.' };
+  return                           { tone: 'red',   label: 'Priced for Perfection', blurb: 'Requires growth far beyond the company\'s entire track record.' };
+}
+
+// ─── Render: Hero ────────────────────────────────────────────────────────────
+function renderHero() {
+  const s = state;
+  document.getElementById('heroTkr').textContent = s.ticker;
+  document.getElementById('heroCo').textContent = s.companyName;
+  document.getElementById('heroExch').textContent = '';
+  document.getElementById('heroPx').textContent = '$' + s.price.toFixed(2);
+  document.getElementById('dataAsOf').textContent = `Price: ${formatDataDate(s.priceDate)} · Financials through FY${s.years[s.years.length - 1]}`;
+  const chg = document.getElementById('heroChg');
+  if (!isNaN(s.dayChgPct)) {
+    chg.textContent = `${s.dayChg >= 0 ? '▲' : '▼'} ${Math.abs(s.dayChg).toFixed(2)} (${fmtPct(s.dayChgPct)})`;
+    chg.className = 'chg mono ' + (s.dayChgPct >= 0 ? 'up' : 'down');
+  } else chg.textContent = '';
+
+  const impl = s.impliedGrowth * 100;
+  const deliv = Number.isFinite(s.fcf5yrCAGR) ? s.fcf5yrCAGR * 100 : null;
+  const firstName = s.companyName.replace(/,?\s+(Inc|Corp|Corporation|Company|Co|Ltd|plc|Holdings|Group)\.?$/i, '');
+
+  document.getElementById('heroStatement').innerHTML = Number.isFinite(deliv)
+    ? `The market is pricing <span class="lo">${escapeHtml(firstName)}</span> to compound free cash flow at ` +
+      `<span class="hi">${impl.toFixed(1)}%</span> a year for five years — it has delivered ` +
+      `<span class="lo">${deliv.toFixed(1)}%</span>.`
+    : `The market is pricing <span class="lo">${escapeHtml(firstName)}</span> to compound free cash flow at ` +
+      `<span class="hi">${impl.toFixed(1)}%</span> a year for five years. Historical CAGR is ` +
+      `<span class="lo">not meaningful</span> because FCF crossed zero.`;
+
+  const focal = document.getElementById('focalNum');
+  animateCount(focal, impl, { decimals: 1, suffix: '%', sign: true, dur: 1100 });
+  document.getElementById('focalSub').textContent = Number.isFinite(deliv)
+    ? `vs. ${deliv.toFixed(1)}% delivered · ${(impl - deliv).toFixed(1)}pp premium`
+    : '5-year historical CAGR not meaningful across zero or negative FCF';
+
+  const v = computeVerdict(impl, Number.isFinite(deliv) ? deliv : s.chartBaseCAGR * 100, s.fcfBullCAGR * 100);
+  const vd = document.getElementById('verdict');
+  vd.className = 'verdict ' + v.tone;
+  document.getElementById('verdictText').textContent = v.label;
+
+	  document.getElementById('statRow').innerHTML = [
+	    ['Price', '$' + s.price.toFixed(2)],
+	    ['Market Cap', fmtMoney(s.marketCap)],
+	    ['Latest FCF', fmtMoney(s.latestFCF)],
+	    ['Net Debt', fmtMoney(s.netDebt)],
+	    ['Shares Out', (s.shares / 1e9).toFixed(2) + 'B'],
+	    ['FCF Margin', (s.latestFCF / s.revSeries[s.revSeries.length - 1] * 100).toFixed(1) + '%']
+	  ].map(([k, val]) => `<div class="stat"><div class="k">${k}</div><div class="v">${val}</div></div>`).join('');
+  renderDataNote();
+}
+
+function renderDataNote() {
+  const note = document.getElementById('dataNote');
+  const notes = [];
+  if (state.hasNegativeFCF) notes.push('At least one historical year has zero or negative free cash flow, so five-year CAGR is marked N/M where the math would be misleading.');
+  if (!Number.isFinite(state.fcf5yrCAGR)) notes.push('Scenario defaults use 0% as the base growth seed because historical FCF crossed zero.');
+  note.textContent = notes.join(' ');
+  note.classList.toggle('show', notes.length > 0);
+}
+
+// ─── Render: Growth spectrum ─────────────────────────────────────────────────
+function renderSpectrum() {
+  const s = state;
+  const impl = s.impliedGrowth * 100;
+  const bear = s.fcfBearCAGR * 100, base = s.chartBaseCAGR * 100, bull = s.fcfBullCAGR * 100;
+  const lo = Math.min(bear, 0, base) - 4;
+  const hi = Math.max(impl, bull) + 5;
+  const span = hi - lo;
+  const pos = v => ((v - lo) / span * 100);
+
+  const bandL = pos(Math.min(bear, bull)), bandR = pos(Math.max(bear, bull));
+  const implPos = pos(impl);
+  const edgeClass = implPos > 82 ? ' edge-right' : implPos < 18 ? ' edge-left' : '';
+  const ticks = [
+    { v: bear, lab: 'Bear 3yr' }, { v: base, lab: Number.isFinite(s.fcf5yrCAGR) ? '5yr Avg' : 'Base Seed' }, { v: bull, lab: 'Bull 3yr' }
+  ];
+  const scaleVals = [lo, lo + span * .25, lo + span * .5, lo + span * .75, hi];
+
+  document.getElementById('spectrum').innerHTML = `
+    <div class="spec-track">
+      <div class="spec-band" style="left:${bandL}%;width:${Math.max(0, bandR - bandL)}%"></div>
+      ${ticks.map(t => `
+        <div class="spec-tick" style="left:${pos(t.v)}%">
+          <div class="pin"></div>
+          <div class="lab">${t.lab}</div>
+          <div class="val">${t.v.toFixed(1)}%</div>
+        </div>`).join('')}
+      <div class="spec-implied${edgeClass}" style="left:${implPos}%">
+        <div class="flag">Market implies <span class="pct grad-text">${impl.toFixed(1)}%</span></div>
+        <div class="glow"></div>
+      </div>
+    </div>
+    <div class="spec-scale">${scaleVals.map(v => `<span>${v.toFixed(0)}%</span>`).join('')}</div>
+	    <div class="spec-caption">The shaded band is everything ${s.ticker} has actually done over rolling 3-year windows. The market sits <b>${(impl - bull).toFixed(1)} points ${impl > bull ? 'beyond' : 'within'}</b> its best available stretch.</div>
+	  `;
+  document.getElementById('specInfo').textContent = `Implied ${impl.toFixed(1)}% · Delivered ${fmtCagr(s.fcf5yrCAGR)}`;
+}
+
+// ─── Render: History bars ────────────────────────────────────────────────────
+function renderHistory() {
+  const s = state;
+  const maxFCF = Math.max(...s.fcfSeries.map(Math.abs));
+  document.getElementById('bars').innerHTML = s.histRows.map((row, i) => {
+    const fcf = s.fcfSeries[i], rev = row.revenue ?? 0;
+    const margin = rev > 0 ? (fcf / rev * 100) : null;
+    const h = maxFCF > 0 ? Math.max(3, Math.abs(fcf) / maxFCF * 100) : 3;
+    const src = row.sources?.free_cash_flow ?? row.sources?.operating_cash_flow;
+    const srcUrl = safeUrl(src?.url);
+    return `
+      <div class="bar-col">
+        <div class="bar-val" style="color:${fcf >= 0 ? 'var(--text)' : 'var(--red)'}">${fmtMoney(fcf)}</div>
+        <div class="bar-shape ${fcf < 0 ? 'neg' : ''}" style="height:${h}%"></div>
+        <div class="bar-foot">
+          <div class="bar-yr">${row.year}</div>
+          <div class="bar-mgn">${margin !== null ? margin.toFixed(0) + '% mgn' : '—'}</div>
+          <div class="bar-src">${srcUrl ? `<a href="${escapeHtml(srcUrl)}" target="_blank" rel="noopener" title="${escapeHtml(src?.tag || '')}">10-K ↗</a>` : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+	  document.getElementById('histFoot').innerHTML = [
+	    ['5yr CAGR', fmtCagr(s.fcf5yrCAGR), 'var(--accent)'],
+	    ['Best 3yr', (s.fcfBullCAGR * 100).toFixed(1) + '%', 'var(--bull)'],
+    ['Worst 3yr', (s.fcfBearCAGR * 100).toFixed(1) + '%', 'var(--bear)'],
+    ['Implied', (s.impliedGrowth * 100).toFixed(1) + '%', 'var(--accent-2)']
+  ].map(([k, v, c]) => `<div class="mini-stat"><div class="k">${k}</div><div class="v" style="color:${c}">${v}</div></div>`).join('');
+}
+
+// ─── Render: Scenario inputs ─────────────────────────────────────────────────
+function renderScenarioInputs() {
+  const sc = state.scenarios;
+  document.getElementById('scenInputs').innerHTML = ['bear', 'base', 'bull'].map(k => `
+    <div class="scen-block ${k}">
+      <h4>${k} <span class="tag">${k === 'base' ? 'SEEDED 5YR' : k === 'bull' ? 'BEST CASE' : 'WORST CASE'}</span></h4>
+      ${[['growth', 'FCF growth', '%'], ['wacc', 'WACC', '%'], ['tgr', 'Terminal g', '%']].map(([f, lab, u]) => `
+        <div class="scen-param">
+          <label>${lab}</label>
+          <div class="stepper compact">
+            <button type="button" tabindex="-1" onclick="step('s_${k}_${f}',-0.5,recalcScenarios)">−</button>
+            <input type="number" id="s_${k}_${f}" value="${sc[k][f]}" step=".5" onchange="recalcScenarios()">
+            <span class="unit">${u}</span>
+            <button type="button" tabindex="-1" onclick="step('s_${k}_${f}',0.5,recalcScenarios)">+</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ─── Recalc scenarios → football field ───────────────────────────────────────
+function recalcScenarios() {
+  const s = state;
+  const results = {};
+  ['bear', 'base', 'bull'].forEach(k => {
+    const g  = parseFloat(document.getElementById(`s_${k}_growth`).value) / 100;
+    const w  = parseFloat(document.getElementById(`s_${k}_wacc`).value) / 100;
+    const tg = parseFloat(document.getElementById(`s_${k}_tgr`).value) / 100;
+    const ev = dcfValue(s.latestFCF, g, w, tg, 5, s.termMode, s.exitMult);
+    const ps = (ev - s.netDebt) / s.shares;
+    results[k] = { ps, mos: (ps - s.price) / s.price * 100 };
+  });
+
+  const vals = Object.values(results).map(r => r.ps);
+  const minV = Math.min(...vals, s.price) * 0.85;
+  const maxV = Math.max(...vals, s.price) * 1.15;
+  const range = maxV - minV || 1;
+  const frac = v => Math.min(1, Math.max(0, (v - minV) / range));
+  const colors = { bear: 'var(--bear)', base: 'var(--base)', bull: 'var(--bull)' };
+
+  const rowsHtml = ['bear', 'base', 'bull'].map(k => {
+    const { ps, mos } = results[k];
+    const a = frac(Math.min(ps, s.price)), b = frac(Math.max(ps, s.price));
+    const grad = ps >= s.price
+      ? `linear-gradient(90deg, ${colors[k]}55, ${colors[k]})`
+      : `linear-gradient(90deg, ${colors[k]}, ${colors[k]}55)`;
+    return `
+      <div class="ff-row">
+        <div class="ff-name ${k}">${k.toUpperCase()}</div>
+        <div class="ff-track">
+          <div class="grid-base"></div>
+          <div class="ff-bar" style="left:${a * 100}%;width:${Math.max(1.5, (b - a) * 100)}%;background:${grad}"></div>
+          <div class="ff-dot" style="left:${frac(ps) * 100}%;background:${colors[k]}"></div>
+        </div>
+        <div class="ff-meta">
+          <div class="fv" style="color:${colors[k]}">$${ps.toFixed(2)}</div>
+          <div class="fm ${mos >= 0 ? 'pos' : 'neg'}">${mos >= 0 ? '+' : ''}${mos.toFixed(0)}% MoS</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const isMob = window.innerWidth <= 600;
+  const ffL = isMob ? 40 : 64, ffR = isMob ? 80 : 152;
+  const axisPoints = isMob ? [0, .5, 1] : [0, .25, .5, .75, 1];
+  const axis = axisPoints.map(f => `<span>$${(minV + range * f).toFixed(0)}</span>`).join('');
+  const pf = frac(s.price);
+
+  document.getElementById('ffChart').innerHTML = `
+    <div class="ff-priceline" style="left: calc(${ffL}px + (100% - ${ffL + ffR}px) * ${pf})">
+      <span class="plab">$${s.price.toFixed(2)}</span>
+    </div>
+    ${rowsHtml}
+    <div class="ff-axis">${axis}</div>`;
+}
+
+// ─── Render: Honesty ─────────────────────────────────────────────────────────
+function renderHonesty() {
+	  const s = state;
+	  const implied = s.impliedGrowth * 100, hist5 = Number.isFinite(s.fcf5yrCAGR) ? s.fcf5yrCAGR * 100 : null, bull = s.fcfBullCAGR * 100;
+  const flags = [];
+
+  if (implied > bull) flags.push({ ic: '🚩', tone: 'red',
+    t: 'Growth beyond any precedent', d: `Implies ${implied.toFixed(1)}% vs. best-ever 3yr of ${bull.toFixed(1)}%.` });
+  else flags.push({ ic: '✓', tone: 'green',
+    t: 'Growth within historical range', d: `Implied ${implied.toFixed(1)}% ≤ best 3yr ${bull.toFixed(1)}%.` });
+
+  const fcf5 = s.latestFCF * Math.pow(1 + s.impliedGrowth, 5);
+  const tv = s.termMode === 'gordon' ? (fcf5 * (1 + s.tgr)) / (s.wacc - s.tgr) : fcf5 * s.exitMult;
+  const ev = dcfValue(s.latestFCF, s.impliedGrowth, s.wacc, s.tgr, 5, s.termMode, s.exitMult);
+  const tvShare = tv / Math.pow(1 + s.wacc, 5) / ev * 100;
+	  if (tvShare > 75) flags.push({ ic: '⚠', tone: 'amber',
+	    t: 'Terminal value dominates', d: `${tvShare.toFixed(0)}% of value sits past year 5, the classic DCF blind spot.` });
+  else flags.push({ ic: '✓', tone: 'green',
+    t: 'Terminal value contained', d: `Only ${tvShare.toFixed(0)}% of value is terminal (under 75%).` });
+
+	  const neg = s.fcfSeries.filter(v => v <= 0).length;
+	  if (neg > 0) flags.push({ ic: '⚠', tone: 'amber',
+	    t: `${neg} year(s) of zero or negative FCF`, d: 'CAGR math is not meaningful across sign changes.' });
+  else flags.push({ ic: '✓', tone: 'green',
+    t: 'Consistently cash-generative', d: 'Every one of the last 5 years produced positive free cash flow.' });
+
+	  if (!Number.isFinite(hist5)) flags.push({ ic: '⚠', tone: 'amber',
+	    t: 'Trend comparison limited', d: 'Five-year FCF CAGR is marked N/M because the historical series crossed zero.' });
+	  else {
+	    const prem = implied - hist5;
+	    if (prem > 10) flags.push({ ic: '🚩', tone: 'red',
+	      t: 'Steep premium to trend', d: `Market bets ${prem.toFixed(1)}pp above the 5yr CAGR.` });
+	    else if (prem < -5) flags.push({ ic: '✓', tone: 'green',
+	      t: 'Priced below its own trend', d: `Implied sits ${Math.abs(prem).toFixed(1)}pp below 5yr CAGR, possible value.` });
+	    else flags.push({ ic: '◆', tone: 'blue',
+	      t: 'Fairly priced vs. trend', d: `Within 10pp of the 5yr CAGR (${hist5.toFixed(1)}%).` });
+	  }
+
+  const pts = { green: 25, blue: 20, amber: 10, red: 0 };
+  const score = flags.reduce((a, f) => a + pts[f.tone], 0);
+
+  const ring = document.getElementById('ringFill');
+  ring.style.strokeDashoffset = 314 - 314 * (score / 100);
+  const scoreColor = score >= 70 ? 'var(--green)' : score >= 45 ? 'var(--amber)' : 'var(--red)';
+  const scoreEl = document.getElementById('scoreNum');
+  scoreEl.style.color = scoreColor;
+  animateCount(scoreEl, score, { decimals: 0, dur: 1100 });
+
+  document.getElementById('hvTitle').textContent =
+    score >= 70 ? 'Grounded in reality' : score >= 45 ? 'Stretching the story' : 'Built on hope';
+  document.getElementById('hvSub').textContent =
+    score >= 70 ? 'The price rests on assumptions the business has demonstrably met.'
+    : score >= 45 ? 'Parts of the thesis lean on outcomes the company has rarely achieved.'
+    : 'The valuation requires a future with little support in the historical record.';
+
+  const colorMap = { green: 'var(--green)', blue: 'var(--accent)', amber: 'var(--amber)', red: 'var(--red)' };
+  document.getElementById('flags').innerHTML = flags.map(f => `
+    <div class="flag-item" style="border-left-color:${colorMap[f.tone]}">
+      <span class="fi" style="color:${colorMap[f.tone]}">${f.ic}</span>
+      <div><div class="ft" style="color:${colorMap[f.tone]}">${f.t}</div><div class="fd">${f.d}</div></div>
+    </div>`).join('');
+}
+
+// ─── Render: Heatmap ─────────────────────────────────────────────────────────
+function renderHeatmap() {
+  const s = state;
+  const growthRates = [-5, 0, 3, 5, 8, 10, 12, 15, 18, 20, 25, 30];
+  const waccRates   = [6, 7, 8, 9, 10, 11, 12, 14, 16, 18];
+  const grid = growthRates.map(g => waccRates.map(w =>
+    (dcfValue(s.latestFCF, g / 100, w / 100, s.tgr, 5, s.termMode, s.exitMult) - s.netDebt) / s.shares));
+  const flat = grid.flat().filter(isFinite);
+  const minV = Math.min(...flat), maxV = Math.max(...flat);
+
+  const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+  function ramp(v) {
+    const t = Math.max(0, Math.min(1, (v - minV) / (maxV - minV || 1)));
+    let r, g, b;
+    if (t < 0.5) { const x = t / 0.5; r = lerp(244, 251, x); g = lerp(63, 191, x); b = lerp(94, 36, x); }
+    else { const x = (t - 0.5) / 0.5; r = lerp(251, 52, x); g = lerp(191, 211, x); b = lerp(36, 153, x); }
+    return { bg: `rgb(${r},${g},${b})`, dark: (r * .299 + g * .587 + b * .114) > 150 };
+  }
+
+  const hdr = `<tr><th class="corner">g ╲ WACC</th>${waccRates.map(w => `<th>${w}%</th>`).join('')}</tr>`;
+  const body = growthRates.map((g, gi) => {
+    const cells = waccRates.map((w, wi) => {
+      const v = grid[gi][wi];
+      const c = ramp(v);
+      const near = Math.abs(v - s.price) / s.price < 0.06;
+      return `<td class="${near ? 'at-price' : ''}" style="background:${c.bg};color:${c.dark ? '#0a0a0a' : '#fff'}" title="g ${g}% · WACC ${w}% → $${v.toFixed(2)}">$${v.toFixed(0)}</td>`;
+    }).join('');
+    return `<tr><th class="rowh">${g}%</th>${cells}</tr>`;
+  }).join('');
+  document.getElementById('heatmap').innerHTML = hdr + body;
+}
+
+// ─── Ticker search ───────────────────────────────────────────────────────────
+let _timer = null, _active = -1, _res = [];
+function onTickerInput(val) {
+  clearTimeout(_timer);
+  const q = val.trim();
+  if (!q) { closeDropdown(); return; }
+  _timer = setTimeout(() => fetchSearch(q), 200);
+}
+async function fetchSearch(q) {
+  const dd = document.getElementById('tickerDropdown');
+  dd.innerHTML = '<div class="ticker-searching">Searching…</div>'; dd.classList.add('open');
+  try {
+    const r = await fetch(`${API_PREFIX}/companies?${new URLSearchParams({ q, limit: 8 })}`);
+    _res = (await r.json()).data ?? []; _active = -1; renderDropdown();
+  } catch { dd.innerHTML = '<div class="ticker-searching">Search failed</div>'; }
+}
+function renderDropdown() {
+  const dd = document.getElementById('tickerDropdown');
+  if (!_res.length) { dd.innerHTML = '<div class="ticker-searching">No matches</div>'; return; }
+  dd.innerHTML = _res.map((r, i) => `
+    <div class="ticker-option${i === _active ? ' active' : ''}" data-ticker="${escapeHtml(r.ticker)}">
+      <span class="sym">${escapeHtml(r.ticker)}</span><span class="co">${escapeHtml(r.name)}</span><span class="exch">${escapeHtml(r.exchange ?? '')}</span>
+    </div>`).join('');
+}
+function selectTicker(sym) {
+  document.getElementById('ticker').value = sym;
+  document.getElementById('tickerSearch').value = sym;
+  closeDropdown(); runAnalysis();
+}
+function closeDropdown() { document.getElementById('tickerDropdown').classList.remove('open'); _res = []; _active = -1; }
+function onTickerKey(e) {
+  const dd = document.getElementById('tickerDropdown');
+  if (e.key === 'Enter') {
+    if (_active >= 0 && _res[_active]) { e.preventDefault(); selectTicker(_res[_active].ticker); return; }
+    closeDropdown(); runAnalysis(); return;
+  }
+  if (!dd.classList.contains('open')) return;
+  if (e.key === 'ArrowDown') { e.preventDefault(); _active = Math.min(_active + 1, _res.length - 1); renderDropdown(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); _active = Math.max(_active - 1, -1); renderDropdown(); }
+  else if (e.key === 'Escape') closeDropdown();
+}
+document.addEventListener('mousedown', e => {
+  if (!document.getElementById('tickerSearch').contains(e.target) &&
+      !document.getElementById('tickerDropdown').contains(e.target)) closeDropdown();
+});
+document.getElementById('tickerDropdown').addEventListener('mousedown', e => {
+  const option = e.target.closest('.ticker-option');
+  if (!option) return;
+  e.preventDefault();
+  selectTicker(option.dataset.ticker);
+});
+
+// ─── Terminal mode toggle ────────────────────────────────────────────────────
+document.getElementById('termMode').addEventListener('change', function () {
+  document.getElementById('exitMultipleField').style.display = this.value === 'multiple' ? 'flex' : 'none';
+  updateUrlState();
+  recompute();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  applyUrlState();
+  runAnalysis();
+});
+</script>
+</body>
+</html>
