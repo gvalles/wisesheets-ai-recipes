@@ -18,6 +18,7 @@ https://www.wisesheets.io/api/docs
 
 | Recipe | Status | Folder | Live Demo |
 | --- | --- | --- | --- |
+| Reverse DCF | Live | [`reverse-dcf/`](reverse-dcf/) | https://wisesheets-reverse-dcf-recipe.vercel.app |
 | Fundamental Stock Dashboard | Live | [`fundamental-stock-dashboard/`](fundamental-stock-dashboard/) | https://fundamental-stock-dashboard.vercel.app |
 | Company Screener | Planned | `company-screener/` | - |
 | Portfolio Tracker | Planned | `portfolio-tracker/` | - |
@@ -26,7 +27,7 @@ https://www.wisesheets.io/api/docs
 ## How People Use This Repo
 
 1. Clone this repo.
-2. Choose a recipe folder, starting with `fundamental-stock-dashboard/`.
+2. Choose a recipe folder, starting with `reverse-dcf/` or `fundamental-stock-dashboard/`.
 3. Copy that folder into their own project or work directly inside it.
 4. Get a free key from https://www.wisesheets.io/api.
 5. Create `.env` in the recipe folder:
@@ -39,6 +40,10 @@ WISESHEETS_API_KEY=your_key_here
 7. Ask their AI coding agent to read the recipe `README.md`, `AGENTS.md`, `CUSTOMIZE.md`, and the official API docs.
 
 ## Current Live Recipe
+
+The `reverse-dcf/` folder contains the code behind this live valuation recipe:
+
+https://wisesheets-reverse-dcf-recipe.vercel.app
 
 The `fundamental-stock-dashboard/` folder contains the code behind this live dashboard:
 
@@ -62,6 +67,8 @@ Optional depending on the recipe:
 ```txt
 worker/
 public/
+api/
+index.html
 ```
 
 Do not include local secrets or deployment-specific files.
@@ -89,6 +96,7 @@ Variables prefixed with `VITE_` are exposed to browser code.
 Future projects should be added as sibling folders:
 
 ```txt
+reverse-dcf/
 company-screener/
 portfolio-tracker/
 excel-addin-starter/
